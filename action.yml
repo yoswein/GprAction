@@ -1,10 +1,28 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Scan GPR Docker'
+description: 'Scan Docker images uploaded to GPR'
+author: 'Yoni & Yossi'
 inputs:
-  myInput:              # change this
-    description: 'input description here'
-    default: 'default value if applicable'
+  gpr-token:
+    description: 'GitHub access token with read/write privileges to GPR'
+    required: true
+  ws-destination-url:
+      description: 'WS environment destination url'
+      required: true
+      default: 'https://saas.whitesourcesoftware.com'
+  ws-api-key:
+    description: 'WS organization api key'
+    required: true
+  ws-user-key:
+    description: 'WS user key'
+    required: true
+  ws-project-key:
+    description: 'WS project key to publish results to'
+    required: true
+outputs:
+  scan-report-file-path:
+    description: 'Path of the scan report file'
+  scan-report-folder-path:
+    description: 'Path of the folder of the scan report file'
 runs:
   using: 'node12'
   main: 'lib/main.js'
