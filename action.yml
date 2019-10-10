@@ -25,4 +25,4 @@ outputs:
     description: 'Path of the folder of the scan report file'
 runs:
   using: 'node12'
-  main: 'srcb/main.js'
+  main: 'src/main.js'
