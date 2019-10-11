@@ -12,7 +12,7 @@ try {
     payload = JSON.parse(rawPayload);
     console.log('Payload:\n', JSON.stringify(payload));
 } catch (err) {
-    core.error('Unable to get event payload, action will terminate', err);
+    core.setFailed('Unable to get event payload, action will terminate', err);
     return;
 }
 
@@ -57,22 +57,20 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
             }
         ).then(
             result => {
-                console.log('Scan report file path: ' + result);
+                let isPrintScanReport = core.getInput('print-scan-report');
+                if (isPrintScanReport === 'true') {
+                    core.info('print scan true');
+                    let scanReport = fs.readFileSync(result);
+                    core.info('Scan report:\n', JSON.stringify(scanReport));
+                } else {
+                    core.debug('print scan false');
+                }
+
+                core.info('Scan report file path: ' + result);
                 core.setOutput('scan-report-file-path', result);
                 var n = result.lastIndexOf('/');
                 var folder = result.substr(0, n);
-                core.setOutput('scan-report-folder-path', folder);
-
-                let isPrintScanReport = core.getInput('print-scan-report');
-
-                if (isPrintScanReport) {
-                    console.log('print scan true');
-                    let scanReport = fs.readFileSync(result);
-                    return console.log('Scan report:\n', JSON.stringify(scanReport));
-                } else {
-                    console.log('print scan false');
-                    return {};
-                }
+                return core.setOutput('scan-report-folder-path', folder);
             }
         ).catch(err => {
             utilities.logCmdError("Exception ", err)
