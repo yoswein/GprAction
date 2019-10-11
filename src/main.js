@@ -1,11 +1,13 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const fs = require('fs');
+const io = require('@actions/io');
 const utilities = require('./utilities');
 
 
 console.log('Event name', github.context.eventName);
 console.log('Event path', github.context.payload);
+let scanPath = '';
 
 // download('https://github.com/whitesource/unified-agent-distribution/releases/latest/download/wss-unified-agent.jar', "wss-unified-agent.jar", function (err) {
 utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar', "wss-unified-agent.jar", function (err) {
@@ -14,8 +16,8 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
         dockerVersion.then(
             result => {
                 console.log('Docker version is ', result);
-                // return utilities.execShellCommand('ls -alF');
-                return utilities.execShellCommand('docker rmi $(docker images -a -q)');
+                return utilities.execShellCommand('ls -alF');
+                // return utilities.execShellCommand('docker rmi $(docker images -a -q)');
             }
         ).then(
             result => {
@@ -40,7 +42,7 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
                 const wsApiKey = core.getInput('ws-api-key');
                 const wsUserKey = core.getInput('ws-user-key');
                 const wsProjectKey = core.getInput('ws-project-key');
-                return utilities.execShellCommand('java -jar wss-unified-agent.jar -d . -wss.url "' + destinationUrl + '" -apiKey ' + wsApiKey + ' -projectToken ' + wsProjectKey + ' -noConfig true  -"docker.scanImages" true -generateScanReport true -userKey ' + wsUserKey);
+                return utilities.execShellCommand('java -jar wss-unified-agent.jar -d . -wss.url "' + destinationUrl + '" -apiKey ' + wsApiKey + ' -projectToken ' + wsProjectKey + ' -noConfig true -generateScanReport true -userKey ' + wsUserKey);
             }
         ).then(
             result => {
@@ -49,33 +51,35 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
             }
         ).then(
             result => {
-                core.info('Scan report file path: ' + result);
-                // core.setOutput('scan-report-file-path', result);
-                // var n = result.lastIndexOf('/');
-                // var folder = result.substr(0, n);
-                // core.setOutput('scan-report-folder-path', folder);
-
-                let isPrintScanReport = core.getInput('print-scan-report');
-                if (isPrintScanReport === 'true') {
-                    core.info('path: ' + result);
-                    core.info('print scan true');
-                    let scanReport = fs.readFileSync(result);
-                    core.info('Scan report:\n', JSON.stringify(scanReport));
-                    // return utilities.execShellCommand('cat "' + result +'"');
-                } else {
-                    core.info('print scan false');
-                }
-
-                return {};
+                scanPath = result;
+                return io.mv(result, './report.json');
             }
-        // ).then(
-        //     result => {
-        //         if (result)  {
-        //             core.info("Scan result: \n", result);
-        //         }
-        //
-        //         return {};
-        //     }
+        ).then(
+            result => {
+                return utilities.execShellCommand('ls -alF')
+            }
+        ).then(
+         result => {
+             core.info('after ls result \n', result);
+
+             core.info('Scan report file path: ' + scanPath);
+             core.setOutput('scan-report-file-path', scanPath);
+             var n = scanPath.lastIndexOf('/');
+             var folder = scanPath.substr(0, n);
+             core.setOutput('scan-report-folder-path', folder);
+
+             let isPrintScanReport = core.getInput('print-scan-report');
+             if (isPrintScanReport === 'true') {
+                 core.info('path: ' + result);
+                 core.info('print scan true');
+                 let scanReport = fs.readFileSync(scanPath);
+                 core.info('Scan report:\n', JSON.stringify(scanReport));
+                 // return utilities.execShellCommand('cat "' + result +'"');
+             } else {
+                 core.info('print scan false');
+             }
+             return {};
+         }
         ).catch(err => {
             utilities.logCmdError("Exception ", err)
         });
