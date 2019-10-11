@@ -59,21 +59,23 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
                 if (isPrintScanReport === 'true') {
                     core.info('path: ' + result);
                     core.info('print scan true');
-                    // let scanReport = fs.readFileSync(result);
-                    // core.info('Scan report:\n', JSON.stringify(scanReport));
-                    return utilities.execShellCommand('cat "' + result +'"');
+                    let scanReport = fs.readFileSync(result);
+                    core.info('Scan report:\n', JSON.stringify(scanReport));
+                    // return utilities.execShellCommand('cat "' + result +'"');
                 } else {
-                    return core.info('print scan false');
-                }
-            }
-        ).then(
-            result => {
-                if (result)  {
-                    core.info("Scan result: \n", result);
+                    core.info('print scan false');
                 }
 
                 return {};
             }
+        // ).then(
+        //     result => {
+        //         if (result)  {
+        //             core.info("Scan result: \n", result);
+        //         }
+        //
+        //         return {};
+        //     }
         ).catch(err => {
             utilities.logCmdError("Exception ", err)
         });
