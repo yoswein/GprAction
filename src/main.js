@@ -48,7 +48,8 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
             result => {
                 console.log('UA run results \n' + result);
                 // return utilities.execShellCommand('find "$(pwd -P)" -name "*scan_report.json"')
-                return utilities.execShellCommand('find -name "*scan_report.json"')
+                // return utilities.execShellCommand('find -name "*scan_report.json"')
+                return utilities.execShellCommand('find /home/runner/work/GitHubActionTesting2/GitHubActionTesting2/./whitesource/ -name "*scan_report.json"');
             }
         ).then(
             result => {
