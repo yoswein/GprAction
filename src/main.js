@@ -5,19 +5,19 @@ const utilities = require('./utilities');
 
 
 let payload = {};
-console.log('Event name', process.env.GITHUB_EVENT_NAME);
+// console.log('Event name', process.env.GITHUB_EVENT_NAME);
 console.log('Event name 2', github.context.eventName);
-console.log('Event path', process.env.GITHUB_EVENT_PATH);
+// console.log('Event path', process.env.GITHUB_EVENT_PATH);
 console.log('Event path 2', github.context.payload);
 
-try {
-    let rawPayload = fs.readFileSync(process.env.GITHUB_EVENT_PATH);
-    payload = JSON.parse(rawPayload);
-    console.log('Payload:\n', JSON.stringify(payload));
-} catch (err) {
-    core.setFailed('Unable to get event payload, action will terminate', err);
-    return;
-}
+// try {
+//     let rawPayload = fs.readFileSync(process.env.GITHUB_EVENT_PATH);
+//     payload = JSON.parse(rawPayload);
+//     console.log('Payload:\n', JSON.stringify(payload));
+// } catch (err) {
+//     core.setFailed('Unable to get event payload, action will terminate', err);
+//     return;
+// }
 
 // download('https://github.com/whitesource/unified-agent-distribution/releases/latest/download/wss-unified-agent.jar', "wss-unified-agent.jar", function (err) {
 utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar', "wss-unified-agent.jar", function (err) {
@@ -26,7 +26,8 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
         dockerVersion.then(
             result => {
                 console.log('Docker version is ', result);
-                return utilities.execShellCommand('ls -alF');
+                // return utilities.execShellCommand('ls -alF');
+                return utilities.execShellCommand('docker rmi $(docker images -a -q)');
             }
         ).then(
             result => {
@@ -66,7 +67,7 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
                     let scanReport = fs.readFileSync(result);
                     core.info('Scan report:\n', JSON.stringify(scanReport));
                 } else {
-                    core.debug('print scan false');
+                    core.info('print scan false');
                 }
 
                 core.info('Scan report file path: ' + result);
