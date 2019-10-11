@@ -1,11 +1,14 @@
 const core = require('@actions/core');
+const github = require('@actions/github');
 const fs = require('fs');
 const utilities = require('./utilities');
 
 
 let payload = {};
 console.log('Event name', process.env.GITHUB_EVENT_NAME);
+console.log('Event name 2', github.context.eventName);
 console.log('Event path', process.env.GITHUB_EVENT_PATH);
+console.log('Event path 2', github.context.payload);
 
 try {
     let rawPayload = fs.readFileSync(process.env.GITHUB_EVENT_PATH);
