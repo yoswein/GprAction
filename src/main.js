@@ -58,7 +58,9 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
         ).then(
             result => {
                 core.info('after ls result \n', result);
-                return io.mv(scanPath, './report.json');
+                let s = scanPath.replace('whitesource', './whitesource');
+                core.info('path replaced: ' + s);
+                return io.mv(s, './report.json');
             }
         ).then(
             result => {
