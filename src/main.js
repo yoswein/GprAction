@@ -55,7 +55,7 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
             result => {
                 scanPath = result;
                 core.info('path: ' + scanPath);
-                return utilities.execShellCommand('ls -alF ./whitesource');
+                return utilities.execShellCommand('cat ' + result);
             }
         ).then(
             result => {
