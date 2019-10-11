@@ -49,21 +49,30 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
             }
         ).then(
             result => {
-                let isPrintScanReport = core.getInput('print-scan-report');
-                if (isPrintScanReport === 'true') {
-                    core.info('path: ', result);
-                    core.info('print scan true');
-                    let scanReport = fs.readFileSync(result);
-                    core.info('Scan report:\n', JSON.stringify(scanReport));
-                } else {
-                    core.info('print scan false');
-                }
-
                 core.info('Scan report file path: ' + result);
                 core.setOutput('scan-report-file-path', result);
                 var n = result.lastIndexOf('/');
                 var folder = result.substr(0, n);
-                return core.setOutput('scan-report-folder-path', folder);
+                core.setOutput('scan-report-folder-path', folder);
+
+                let isPrintScanReport = core.getInput('print-scan-report');
+                if (isPrintScanReport === 'true') {
+                    core.info('path: ', result);
+                    core.info('print scan true');
+                    // let scanReport = fs.readFileSync(result);
+                    // core.info('Scan report:\n', JSON.stringify(scanReport));
+                    return utilities.execShellCommand('cat ' + result);
+                } else {
+                    return core.info('print scan false');
+                }
+            }
+        ).then(
+            result => {
+                if (result)  {
+                    core.info("Scan result: \n", result);
+                }
+
+                return {};
             }
         ).catch(err => {
             utilities.logCmdError("Exception ", err)
