@@ -61,7 +61,7 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
                     core.info('print scan true');
                     // let scanReport = fs.readFileSync(result);
                     // core.info('Scan report:\n', JSON.stringify(scanReport));
-                    return utilities.execShellCommand('cat ' + result);
+                    return utilities.execShellCommand('cat "' + result +'"');
                 } else {
                     return core.info('print scan false');
                 }
