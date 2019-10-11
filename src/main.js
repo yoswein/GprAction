@@ -1,11 +1,19 @@
 const core = require('@actions/core');
 const fs = require('fs');
-// const github = require('@actions/github');
 const utilities = require('./utilities');
 
 
+let payload = {};
 console.log('Event name', process.env.GITHUB_EVENT_NAME);
 console.log('Event path', process.env.GITHUB_EVENT_PATH);
+
+try {
+    let rawPayload = fs.readFileSync(process.env.GITHUB_EVENT_PATH);
+    payload = JSON.parse(rawPayload);
+} catch (err) {
+    core.error('Unable to get event payload, action will terminate', err);
+    return;
+}
 
 // download('https://github.com/whitesource/unified-agent-distribution/releases/latest/download/wss-unified-agent.jar', "wss-unified-agent.jar", function (err) {
 utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar', "wss-unified-agent.jar", function (err) {
@@ -58,10 +66,8 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
 
                 if (isPrintScanReport) {
                     console.log('print scan true');
-                    fs.readFile(result, function (err, data) {
-                        err ? Function("error","throw error")(err) : console.log(JSON.stringify(data) ); /* If an error exists, show it, otherwise show the file */
-                        return {};
-                    });
+                    let scanReport = fs.readFileSync(result);
+                    return console.log('Scan report:\n', JSON.stringify(scanReport));
                 } else {
                     console.log('print scan false');
                     return {};
