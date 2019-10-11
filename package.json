@@ -1,6 +1,6 @@
 {
   "name": "whitesource-gpr-action",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "WhiteSource GPR action",
   "main": "src/main.js",
