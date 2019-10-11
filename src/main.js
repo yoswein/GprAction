@@ -10,12 +10,12 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
         var dockerVersion = utilities.execShellCommand('docker -v');
         dockerVersion.then(
             result => {
-                utilities.logCmdData(result);
+                utilities.logCmdData('Docker version is ', result);
                 return utilities.execShellCommand('ls -alF');
             }
         ).then(
             result => {
-                utilities.logCmdData('Docker version is ', result);
+                utilities.logCmdData('ls command output \n', result);
                 const gprToken = core.getInput('gpr-token');
                 return utilities.execShellCommand('docker login docker.pkg.github.com -u whitesource-yossi -p ' + gprToken);
             }
@@ -36,7 +36,7 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
                 const wsApiKey = core.getInput('ws-api-key');
                 const wsUserKey = core.getInput('ws-user-key');
                 const wsProjectKey = core.getInput('ws-project-key');
-                return utilities.execShellCommand('java -jar wss-unified-agent.jar -d . -wss.url ' + destinationUrl + ' -apiKey ' + wsApiKey + ' -projectToken ' + wsProjectKey + ' -noConfig true -generateScanReport true -userKey ' + wsUserKey);
+                return utilities.execShellCommand('java -jar wss-unified-agent.jar -d . -wss.url "' + destinationUrl + '" -apiKey ' + wsApiKey + ' -projectToken ' + wsProjectKey + ' -noConfig true -generateScanReport true -userKey ' + wsUserKey);
             }
         ).then(
             result => {
