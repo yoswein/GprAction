@@ -17,7 +17,7 @@ inputs:
   ws-project-key:
     description: 'WS project key to publish results to'
     required: true
-  scan-print-report:
+  print-scan-report:
     description: 'Whether to print the results report'
     required: false
     default: false

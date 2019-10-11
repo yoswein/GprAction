@@ -32,10 +32,6 @@ module.exports.execShellCommand = function (command) {
     });
 };
 
-module.exports.logCmdData = function (message, data) {
-    console.log(message, data)
-};
-
 module.exports.logCmdError = function (message, error) {
     console.log(message + error)
 };
