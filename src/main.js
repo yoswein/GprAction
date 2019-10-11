@@ -50,10 +50,10 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
         ).then(
             result => {
                 core.info('Scan report file path: ' + result);
-                core.setOutput('scan-report-file-path', result);
-                var n = result.lastIndexOf('/');
-                var folder = result.substr(0, n);
-                core.setOutput('scan-report-folder-path', folder);
+                // core.setOutput('scan-report-file-path', result);
+                // var n = result.lastIndexOf('/');
+                // var folder = result.substr(0, n);
+                // core.setOutput('scan-report-folder-path', folder);
 
                 let isPrintScanReport = core.getInput('print-scan-report');
                 if (isPrintScanReport === 'true') {
