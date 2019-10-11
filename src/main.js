@@ -10,6 +10,7 @@ console.log('Event path', process.env.GITHUB_EVENT_PATH);
 try {
     let rawPayload = fs.readFileSync(process.env.GITHUB_EVENT_PATH);
     payload = JSON.parse(rawPayload);
+    console.log('Payload:\n', JSON.stringify(payload));
 } catch (err) {
     core.error('Unable to get event payload, action will terminate', err);
     return;
