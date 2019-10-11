@@ -8,7 +8,6 @@ inputs:
   ws-destination-url:
       description: 'WS environment destination url'
       required: true
-      default: 'https://saas.whitesourcesoftware.com'
   ws-api-key:
     description: 'WS organization api key'
     required: true
@@ -18,6 +17,10 @@ inputs:
   ws-project-key:
     description: 'WS project key to publish results to'
     required: true
+  scan-print-report:
+    description: 'Whether to print the results report'
+    required: false
+    default: false
 outputs:
   scan-report-file-path:
     description: 'Path of the scan report file'
@@ -26,3 +29,6 @@ outputs:
 runs:
   using: 'node12'
   main: 'src/main.js'
+branding:
+  icon: 'award'
+  color: 'green'
