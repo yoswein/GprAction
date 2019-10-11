@@ -40,7 +40,7 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
                 const wsApiKey = core.getInput('ws-api-key');
                 const wsUserKey = core.getInput('ws-user-key');
                 const wsProjectKey = core.getInput('ws-project-key');
-                return utilities.execShellCommand('java -jar wss-unified-agent.jar -d . -wss.url "' + destinationUrl + '" -apiKey ' + wsApiKey + ' -projectToken ' + wsProjectKey + ' -noConfig true -generateScanReport true -userKey ' + wsUserKey);
+                return utilities.execShellCommand('java -jar wss-unified-agent.jar -d . -wss.url "' + destinationUrl + '" -apiKey ' + wsApiKey + ' -projectToken ' + wsProjectKey + ' -noConfig true  -"docker.scanImages" -generateScanReport true -userKey ' + wsUserKey);
             }
         ).then(
             result => {
