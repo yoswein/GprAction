@@ -57,28 +57,35 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
         ).then(
             result => {
                 core.info('after ls result \n', result);
-                return io.mv(result, './report.json');
+                return io.mv(scanPath, './report.json');
             }
         ).then(
-         result => {
-             core.info('Scan report file path: ' + scanPath);
-             core.setOutput('scan-report-file-path', scanPath);
-             var n = scanPath.lastIndexOf('/');
-             var folder = scanPath.substr(0, n);
-             core.setOutput('scan-report-folder-path', folder);
+            result => {
+                scanPath = result;
+                return utilities.execShellCommand('ls -alF ./whitesource');
+            }
+        ).then(
+            result => {
+                core.info('after ls result \n', result);
 
-             let isPrintScanReport = core.getInput('print-scan-report');
-             if (isPrintScanReport === 'true') {
-                 core.info('path: ' + result);
-                 core.info('print scan true');
-                 let scanReport = fs.readFileSync(scanPath);
-                 core.info('Scan report:\n', JSON.stringify(scanReport));
-                 // return utilities.execShellCommand('cat "' + result +'"');
-             } else {
-                 core.info('print scan false');
-             }
-             return {};
-         }
+                core.info('Scan report file path: ' + scanPath);
+                core.setOutput('scan-report-file-path', scanPath);
+                var n = scanPath.lastIndexOf('/');
+                var folder = scanPath.substr(0, n);
+                core.setOutput('scan-report-folder-path', folder);
+
+                let isPrintScanReport = core.getInput('print-scan-report');
+                if (isPrintScanReport === 'true') {
+                    core.info('path: ' + result);
+                    core.info('print scan true');
+                    let scanReport = fs.readFileSync(scanPath);
+                    core.info('Scan report:\n', JSON.stringify(scanReport));
+                    // return utilities.execShellCommand('cat "' + result +'"');
+                } else {
+                    core.info('print scan false');
+                }
+                return {};
+            }
         ).catch(err => {
             utilities.logCmdError("Exception ", err)
         });
