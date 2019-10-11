@@ -57,7 +57,7 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
 
                 let isPrintScanReport = core.getInput('print-scan-report');
                 if (isPrintScanReport === 'true') {
-                    core.info('path: ', result);
+                    core.info('path: ' + result);
                     core.info('print scan true');
                     // let scanReport = fs.readFileSync(result);
                     // core.info('Scan report:\n', JSON.stringify(scanReport));

@@ -22,8 +22,6 @@ module.exports.execShellCommand = function (command) {
     return new Promise((resolve, reject) => {
         nodeCmd.get(command, (err, data, stderr) => {
             if (err) {
-                console.log("ERROR!!! " + stderr);
-                console.log("ERROR 2!!! " + err);
                 reject(stderr);
             } else {
                 resolve(data);
