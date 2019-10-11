@@ -2,9 +2,7 @@ const fs = require('fs');
 const nodeCmd = require('node-cmd');
 const https = require('follow-redirects').https;
 
-let exports = module.exports = {};
-
-exports.download = function (url, dest, cb) {
+module.exports.download = function (url, dest, cb) {
     var file = fs.createWriteStream(dest);
     var request = https.get(url, function (response) {
         response.pipe(file);
@@ -20,7 +18,7 @@ exports.download = function (url, dest, cb) {
     });
 };
 
-exports.execShellCommand = function (command) {
+module.exports.execShellCommand = function (command) {
     return new Promise((resolve, reject) => {
         nodeCmd.get(command, (err, data, stderr) => {
             if (err) {
@@ -34,10 +32,10 @@ exports.execShellCommand = function (command) {
     });
 };
 
-exports.logCmdData = function (message, data) {
+module.exports.logCmdData = function (message, data) {
     console.log(message, data)
 };
 
-exports.logCmdError = function (message, error) {
+module.exports.logCmdError = function (message, error) {
     console.log(message + error)
 };
