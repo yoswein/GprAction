@@ -51,17 +51,16 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
             }
         ).then(
             result => {
+                return utilities.execShellCommand('ls -alF')
                 scanPath = result;
-                return io.mv(result, './report.json');
             }
         ).then(
             result => {
-                return utilities.execShellCommand('ls -alF')
+                core.info('after ls result \n', result);
+                return io.mv(result, './report.json');
             }
         ).then(
          result => {
-             core.info('after ls result \n', result);
-
              core.info('Scan report file path: ' + scanPath);
              core.setOutput('scan-report-file-path', scanPath);
              var n = scanPath.lastIndexOf('/');
