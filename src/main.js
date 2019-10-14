@@ -83,6 +83,15 @@ async function run() {
 					  '-noConfig', 'true',
 					  '-generateScanReport', 'true',
 					  '-userKey', wsUserKey];
+					  
+			await exec.exec('cd', [unifiedAgentPath]);
+			await exec.exec('ls', ['-alF']);
+			
+			await exec.exec('cd', [downloadedPackagePath]);
+			await exec.exec('ls', ['-alF']);
+			
+			await exec.exec('cd');
+			await exec.exec('ls', ['-alF']);
 		}
 		
 		// Run the UA
