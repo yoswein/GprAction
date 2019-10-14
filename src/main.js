@@ -94,7 +94,7 @@ async function run() {
 		};
         await exec.exec('ls', ['-alF']);
         await exec.exec('ls ./whitesource/', ['-alF']);
-		await exec.exec('find', ['./whitesource/', '-name', '"*scan_report.json"'], options);
+		await exec.exec('find', ['./whitesource/', '-name', '\*.json'], options);
 		
 		// Set the output parameters
         core.info('Scan log file: ' + result);
