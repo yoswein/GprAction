@@ -105,8 +105,8 @@ async function run() {
         if (isPrintScanReport === 'true') {
             core.info('print scan true');
             core.info('path: ' + logFilePath);
-             let scanReport = fs.readFileSync(logFilePath);
-             core.info('Scan report:\n' + JSON.stringify(scanReport));
+             let scanReport = fs.readFileSync(logFilePath, 'utf8');
+             core.info('Scan report:\n' + scanReport);
          } else {
              core.info('print scan false');
          }
