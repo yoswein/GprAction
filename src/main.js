@@ -5,8 +5,8 @@ const io = require('@actions/io');
 const utilities = require('./utilities');
 
 
-core.info('Event name', github.context.eventName);
-core.info('Event path', github.context.payload);
+core.info('Event name' + github.context.eventName);
+core.info('Event path' + github.context.payload);
 let scanPath = '';
 
 // download('https://github.com/whitesource/unified-agent-distribution/releases/latest/download/wss-unified-agent.jar', "wss-unified-agent.jar", function (err) {
@@ -15,29 +15,29 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
         var dockerVersion = utilities.execShellCommand('docker -v');
         dockerVersion.then(
             result => {
-                core.info('Docker version is ', result);
+                core.info('Docker version is ' + result);
                 return utilities.execShellCommand('ls -alF');
                 // return utilities.execShellCommand('docker rmi $(docker images -a -q)');
             }
         ).then(
             result => {
-                core.info('ls command output \n', result);
+                core.info('ls command output \n' + result);
                 const gprToken = core.getInput('gpr-token');
                 return utilities.execShellCommand('docker login docker.pkg.github.com -u whitesource-yossi -p ' + gprToken);
             }
         ).then(
             result => {
-                core.info('Docker login result ', result);
+                core.info('Docker login result ' + result);
                 return utilities.execShellCommand('docker pull docker.pkg.github.com/whitesource-yossi/githubactiontesting2/localdjango:1.0');
             }
         ).then(
             result => {
-                core.info('Docker pull results ', result);
+                core.info('Docker pull results ' + result);
                 return utilities.execShellCommand('docker images');
             }
         ).then(
             result => {
-                core.info('Docker images results ', result);
+                core.info('Docker images results ' + result);
                 const destinationUrl = core.getInput('ws-destination-url');
                 const wsApiKey = core.getInput('ws-api-key');
                 const wsUserKey = core.getInput('ws-user-key');
@@ -60,7 +60,7 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
             }
         ).then(
             result => {
-                core.info('Second ls result \n', result);
+                core.info('Second ls result \n' + result);
 
                 core.setOutput('scan-report-file-path', scanPath);
                 var n = scanPath.lastIndexOf('/');
@@ -68,14 +68,14 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
                 core.setOutput('scan-report-folder-path', folder);
 
                 let scanReport = fs.readFileSync(scanPath);
-                core.info('Scan report:\n', JSON.stringify(scanReport));
+                core.info('Scan report:\n' + JSON.stringify(scanReport));
 
                 // let isPrintScanReport = core.getInput('print-scan-report');
                 // if (isPrintScanReport === 'true') {
                 //     core.info('path: ' + result);
                 //     core.info('print scan true');
                 //     let scanReport = fs.readFileSync(scanPath);
-                //     core.info('Scan report:\n', JSON.stringify(scanReport));
+                //     core.info('Scan report:\n' + JSON.stringify(scanReport));
                 //     // return utilities.execShellCommand('cat "' + result +'"');
                 // } else {
                 //     core.info('print scan false');
@@ -83,7 +83,7 @@ utilities.download('https://wss-qa.s3.amazonaws.com/unified-agent/integration/ws
                 return {};
             }
         ).catch(err => {
-            utilities.logCmdError("Exception ", err)
+            core.error('Exception \n' + err);
         });
     } catch (error) {
         core.setFailed(error.message);

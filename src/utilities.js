@@ -29,7 +29,3 @@ module.exports.execShellCommand = function (command) {
         });
     });
 };
-
-module.exports.logCmdError = function (message, error) {
-    console.log(message + error)
-};
