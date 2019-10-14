@@ -4,6 +4,7 @@ const fs = require('fs');
 const io = require('@actions/io');
 const utilities = require('./utilities');
 const tc = require('@actions/tool-cache');
+const exec = require('@actions/exec');
 
 
 async function run() {
@@ -19,6 +20,7 @@ async function run() {
 		  var repositoryFullName = payload.repository.full_name;
 		  var dockerPullCommand = 'docker pull docker.pkg.github.com/' + repositoryFullName + '/' + packageName + ':' + packageVersion;
 		  core.info('dockerPullCommand: ' + dockerPullCommand);
+		  await exec.exec(dockerPullCommand);
 		} else {
 		  var downloadLink = payload.registry_package.package_version.package_files[0].download_url;
 		  core.info('downloadLink: ' + downloadLink);
@@ -29,7 +31,35 @@ async function run() {
 		var unifiedAgentPath = await tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
 		core.info('unifiedAgentPath: ' + unifiedAgentPath);
 
+		let result = '';
+		let execError = '';
+
+		const options = {};
+		options.listeners = {
+		  stdout: (data: Buffer) => {
+			result += data.toString();
+		  },
+		  stderr: (data: Buffer) => {
+			execError += data.toString();
+		  }
+		};
+		options.cwd = './lib';
+
+		await exec.exec('docker', ['-v'], options);
+		core.info('Docker version is: ' + myOutput);
+		
+		await exec.exec('ls', ['-alF'], options);
+		core.info('ls command output \n' + result);
+		
+		const gprToken = core.getInput('gpr-token');
+		const octokit = new github.GitHub(gprToken);
+		const { data: user } = await octokit.users.getAuthenticated();
+		console.log(user);
+		console.log(JSON.stringify(user));
+
+
 	} catch (error) {
+		core.error('Exception: ' + error.message);
 		core.setFailed(error.message);
 	}
 }
