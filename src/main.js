@@ -46,7 +46,7 @@ async function run() {
 		core.info('Docker version is: ' + result);
 		
 		result = '';
-		var result = await exec.exec('ls', ['-alF'], options);
+		await exec.exec('ls', ['-alF'], options);
 		core.info('ls command output \n' + result);
 
 	} catch (error) {
