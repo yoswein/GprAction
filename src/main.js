@@ -97,6 +97,7 @@ async function run() {
 		await exec.exec('find', ['./whitesource/', '-name', '\*scan_report.json'], options);
 		
 		// Set the output parameters
+        result = result.replace(/(\r\n|\n|\r)/gm,"").trim();
         core.info('Scan log file: ' + result);
 		core.setOutput('scan-report-file-path', result);
 		const folder = result.substr(0, result.lastIndexOf('/'));
