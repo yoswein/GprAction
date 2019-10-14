@@ -35,7 +35,7 @@ async function run() {
 		core.info('Docker version is: ' + result);
 		
 		var result = await exec.exec('ls', ['-alF']);
-		core.info('ls command output \n' + myOutput);
+		core.info('ls command output \n' + result);
 		
 		const gprToken = core.getInput('gpr-token');
 		const octokit = new github.GitHub(gprToken);
