@@ -84,10 +84,10 @@ async function run() {
 					  '-generateScanReport', 'true',
 					  '-userKey', wsUserKey];
 					  
-			await exec.exec('cd', [unifiedAgentPath]);
+			await exec.exec('cd ' + unifiedAgentPath);
 			await exec.exec('ls', ['-alF']);
 			
-			await exec.exec('cd', [downloadedPackagePath]);
+			await exec.exec('cd ' + downloadedPackagePath);
 			await exec.exec('ls', ['-alF']);
 			
 			await exec.exec('cd');
