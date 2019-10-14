@@ -92,11 +92,9 @@ async function run() {
 			result += data.toString();
 			console.log('result: ' + result);
 		};
-
-
-        // List files in curr directory
         await exec.exec('ls', ['-alF']);
-        
+        await exec.exec('ls /home/runner/work/GitHubActionTesting1/GitHubActionTesting1/./whitesource/', ['-alF']);
+        await exec.exec('ls ./whitesource/', ['-alF']);
 		await exec.exec('find', ['.', '-name', '"*scan_report.json"'], options);
 		
 		// Set the output parameters
