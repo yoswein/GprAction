@@ -71,7 +71,7 @@ async function run() {
 					  '-projectToken ', wsProjectKey,
 					  '-noConfig', 'true',
 					  '-generateScanReport', 'true',
-					  '-"docker.scanImages"', 'true',
+					  '-docker.scanImages', 'true',
 					  '-userKey', wsUserKey];
 		// Else - the package type is not docker - download it
 		} else {
