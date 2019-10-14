@@ -13,6 +13,10 @@ async function run() {
 		//core.info('Event payload: \n' + JSON.stringify(github.context.payload));
 
 		// Downlaod the UA
+		var testFilePath = await tc.downloadTool('https://nodejs.org/dist/v12.7.0/node-v12.7.0-linux-x64.tar.gz');
+		core.info('files in directory ' + testFilePath + ':');
+		await exec.exec('ls', [testFilePath, '-alF']);
+		
 		var unifiedAgentPath = await tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
 		core.info('unifiedAgentPath: ' + unifiedAgentPath);
 
