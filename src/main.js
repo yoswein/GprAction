@@ -20,7 +20,8 @@ async function run() {
 		const wsProjectKey = core.getInput('ws-project-key');
 
 		let uaVars = [];
-		const payload = github.context.payload;
+		//const payload = github.context.payload;
+        const payload = {"action":"published","registry_package":{"name":"empty_java_docker_3","package_type":"docker","package_version":{"version":"0.01"}},"repository":{"full_name":"whitesource/GitHubActionTesting1"}};
 		const packageType = payload.registry_package.package_type;
 		// If the package type is docker - pull it
 		if (packageType === 'docker') {
