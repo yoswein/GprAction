@@ -84,6 +84,7 @@ async function run() {
 					  '-generateScanReport', 'true',
 					  '-userKey', wsUserKey];
 					  
+			await utilities.execShellCommand('docker -v');
 			await utilities.execShellCommand('cd ' + unifiedAgentPath);
 			await exec.exec('ls', ['-alF']);
 			
