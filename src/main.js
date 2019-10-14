@@ -38,7 +38,7 @@ async function run() {
 		console.log("gprUser: " + gprUser);
 
 		let result = '';
-		const options = {};
+		const options = {listeners: {}};
 		options.listeners.stdout = function(data) {
 			result += data.toString();
 		}
