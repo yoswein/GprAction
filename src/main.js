@@ -36,10 +36,10 @@ async function run() {
 
 		const options = {};
 		options.listeners = {
-		  stdout: (data: Buffer) => {
+		  stdout: (data) => {
 			myOutput += data.toString();
 		  },
-		  stderr: (data: Buffer) => {
+		  stderr: (data) => {
 			myError += data.toString();
 		  }
 		};
@@ -48,6 +48,8 @@ async function run() {
 		await exec.exec('docker', ['-v'], options);
 		core.info('Docker version is: ' + myOutput);
 		
+		myOutput = '';
+		myError = '';
 		await exec.exec('ls', ['-alF'], options);
 		core.info('ls command output \n' + myOutput);
 		
