@@ -31,9 +31,17 @@ async function run() {
 		
 			// List existing docker images
 			await exec.exec('docker', ['images']);
-			
+
+			let result = '';
+			const options = {listeners: {}};
+			options.listeners.stdout = function(data) {
+				result += data.toString();
+			};
+			await exec.exec('docker', ['images', '-a', '-q'], options);
+			result = result.replace(/(\r\n|\n|\r)/gm," ");
+
 			// Remove all existing docker images
-			await exec.exec('docker rmi "$(docker images -a -q)"')
+			await exec.exec('docker', ['rmi', result])
 			
 			// Get the authenticated user of the gpr token
 			const gprToken = core.getInput('gpr-token');
