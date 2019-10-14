@@ -93,9 +93,8 @@ async function run() {
 			console.log('result: ' + result);
 		};
         await exec.exec('ls', ['-alF']);
-        await exec.exec('ls /home/runner/work/GitHubActionTesting1/GitHubActionTesting1/./whitesource/', ['-alF']);
         await exec.exec('ls ./whitesource/', ['-alF']);
-		await exec.exec('find', ['.', '-name', '"*scan_report.json"'], options);
+		await exec.exec('find', ['./whitesource/', '-name', '"*scan_report.json"'], options);
 		
 		// Set the output parameters
         core.info('Scan log file: ' + result);
