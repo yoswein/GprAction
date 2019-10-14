@@ -31,18 +31,23 @@ async function run() {
 		var unifiedAgentPath = await tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
 		core.info('unifiedAgentPath: ' + unifiedAgentPath);
 
-		var result = await exec.exec('docker', ['-v']);
-		core.info('Docker version is: ' + result);
-		
-		var result = await exec.exec('ls', ['-alF']);
-		core.info('ls command output \n' + result);
-		
 		const gprToken = core.getInput('gpr-token');
 		const octokit = new github.GitHub(gprToken);
 		const { data: user } = await octokit.users.getAuthenticated();
-		console.log(user);
-		console.log(JSON.stringify(user));
+		var gprUser = user.login;
+		console.log("gprUser: " + gprUser);
 
+		let result = '';
+		const options = {};
+		options.listeners.stdout = function(data) {
+			result += data.toString();
+		}
+		await exec.exec('docker', ['-v', options]);
+		core.info('Docker version is: ' + result);
+		
+		result = '';
+		var result = await exec.exec('ls', ['-alF'], options);
+		core.info('ls command output \n' + result);
 
 	} catch (error) {
 		core.setFailed(error.message);
