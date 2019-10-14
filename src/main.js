@@ -92,7 +92,12 @@ async function run() {
 			result += data.toString();
 			console.log('result: ' + result);
 		};
-		await exec.exec('find', ['/', '-name', '"*scan_report.json"'], options);
+
+
+        // List files in curr directory
+        await exec.exec('ls', ['-alF']);
+        
+		await exec.exec('find', ['.', '-name', '"*scan_report.json"'], options);
 		
 		// Set the output parameters
         core.info('Scan log file: ' + result);
