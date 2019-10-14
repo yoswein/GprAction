@@ -22,12 +22,12 @@ try {
 	} else {
 	  var downloadLink = payload.registry_package.package_version.package_files[0].download_url;
 	  core.info('downloadLink: ' + downloadLink);
-	  var downloadedPackagePath = await tc.downloadTool(downloadLink);
+	  var downloadedPackagePath = tc.downloadTool(downloadLink);
 	  core.info('downloadedPackagePath: ' + downloadedPackagePath);
 	}
 	
 	
-	var unifiedAgentPath = await tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
+	var unifiedAgentPath = tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
 	core.info('unifiedAgentPath: ' + unifiedAgentPath);
 
 } catch (error) {
