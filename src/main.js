@@ -41,7 +41,7 @@ async function run() {
 			result = result.replace(/(\r\n|\n|\r)/gm," ");
 
 			// Remove all existing docker images
-			await exec.exec('docker', ['rmi', result])
+			await exec.exec('docker rmi ' + result);
 			
 			// Get the authenticated user of the gpr token
 			const gprToken = core.getInput('gpr-token');
