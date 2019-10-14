@@ -5,33 +5,34 @@ const io = require('@actions/io');
 const utilities = require('./utilities');
 const tc = require('@actions/tool-cache');
 
+run();
 
-try {
-	
-	core.info('Event name: ' + github.context.eventName);
-	core.info('Event payload: \n' + JSON.stringify(github.context.payload));
+async run() {
+	try {
+		core.info('Event name: ' + github.context.eventName);
+		core.info('Event payload: \n' + JSON.stringify(github.context.payload));
 
-	const payload = github.context.payload;
-	var packageType = payload.registry_package.package_type;
-	if (packageType == 'docker') {
-	  var packageName = payload.registry_package.name;
-	  var packageVersion = payload.registry_package.package_version.version;
-	  var repositoryFullName = payload.repository.full_name;
-	  var dockerPullCommand = 'docker pull docker.pkg.github.com/' + repositoryFullName + '/' + packageName + ':' + packageVersion;
-	  core.info('dockerPullCommand: ' + dockerPullCommand);
-	} else {
-	  var downloadLink = payload.registry_package.package_version.package_files[0].download_url;
-	  core.info('downloadLink: ' + downloadLink);
-	  var downloadedPackagePath = tc.downloadTool(downloadLink);
-	  core.info('downloadedPackagePath: ' + downloadedPackagePath);
+		const payload = github.context.payload;
+		var packageType = payload.registry_package.package_type;
+		if (packageType == 'docker') {
+		  var packageName = payload.registry_package.name;
+		  var packageVersion = payload.registry_package.package_version.version;
+		  var repositoryFullName = payload.repository.full_name;
+		  var dockerPullCommand = 'docker pull docker.pkg.github.com/' + repositoryFullName + '/' + packageName + ':' + packageVersion;
+		  core.info('dockerPullCommand: ' + dockerPullCommand);
+		} else {
+		  var downloadLink = payload.registry_package.package_version.package_files[0].download_url;
+		  core.info('downloadLink: ' + downloadLink);
+		  var downloadedPackagePath = await tc.downloadTool(downloadLink);
+		  core.info('downloadedPackagePath: ' + downloadedPackagePath);
+		}
+		
+		var unifiedAgentPath = await tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
+		core.info('unifiedAgentPath: ' + unifiedAgentPath);
+
+	} catch (error) {
+		core.setFailed(error.message);
 	}
-	
-	
-	var unifiedAgentPath = tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
-	core.info('unifiedAgentPath: ' + unifiedAgentPath);
-
-} catch (error) {
-	core.setFailed(error.message);
 }
 
 
