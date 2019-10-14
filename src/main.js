@@ -84,15 +84,11 @@ async function run() {
 					  '-generateScanReport', 'true',
 					  '-userKey', wsUserKey];
 					  
-			await utilities.execShellCommand('docker -v');
-			await utilities.execShellCommand('cd ' + unifiedAgentPath);
-			await exec.exec('ls', ['-alF']);
+			core.info('files in ua directory ' + unifiedAgentPath + ':');
+			await exec.exec('ls', [unifiedAgentPath, '-alF']);
 			
-			await utilities.execShellCommand('cd ' + downloadedPackagePath);
-			await exec.exec('ls', ['-alF']);
-			
-			await utilities.execShellCommand('cd');
-			await exec.exec('ls', ['-alF']);
+			core.info('files in dosnloaded package directory ' + downloadedPackagePath + ':');
+			await exec.exec('ls', [downloadedPackagePath, '-alF']);
 		}
 		
 		// Run the UA
