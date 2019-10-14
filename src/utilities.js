@@ -1,6 +1,7 @@
 const fs = require('fs');
 const nodeCmd = require('node-cmd');
 const https = require('follow-redirects').https;
+const core = require('@actions/core');
 
 module.exports.download = function (url, dest, cb) {
     var file = fs.createWriteStream(dest);
@@ -21,14 +22,15 @@ module.exports.download = function (url, dest, cb) {
 module.exports.download2 = function (url, dest) {
 	return new Promise((resolve, reject) => {
 		var file = fs.createWriteStream(dest);
-		var request = https.get(url, function (response) {
+		https.get(url, function (response) {
 			response.pipe(file);
 			file.on('finish', function () {
 				file.close();
-				console.log('Finished downloading file');
+                core.info('Finished downloading file ' + url);
 				resolve(dest);
 			});
 		}).on('error', function (err) { // Handle errors
+            core.error('Failed downloading file ' + url);
 			fs.unlink(dest);
 			reject(err.message);
 		});

@@ -1,9 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const fs = require('fs');
-const io = require('@actions/io');
 const utilities = require('./utilities');
-const tc = require('@actions/tool-cache');
 const exec = require('@actions/exec');
 
 
@@ -13,12 +10,9 @@ async function run() {
 		//core.info('Event payload: \n' + JSON.stringify(github.context.payload));
 
 		// Download the UA
-		const testFilePath = await utilities.download2('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar', 'wss-unified-agent.jar');
-		core.info('files in directory ' + testFilePath + ':');
-		await exec.exec('ls', [testFilePath, '-alF']);
-
-		const unifiedAgentPath = await tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
-		core.info('unifiedAgentPath: ' + unifiedAgentPath);
+		const uaDownloadPath = 'https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar';
+		const uaJarName = 'wss-unified-agent.jar';
+		await utilities.download2(uaDownloadPath, uaJarName);
 
 		// List files in curr directory
 		await exec.exec('ls', ['-alF']);
@@ -64,7 +58,7 @@ async function run() {
 			// List existing docker images
 			await exec.exec('docker', ['images']);
 			
-			uaVars = ['-jar', unifiedAgentPath + '/wss-unified-agent-integration-763.jar', 
+			uaVars = ['-jar', uaJarName,
 					  '-d', '.',
 					  '-wss.url', wsDestinationUrl,
 					  '-apiKey', wsApiKey,
@@ -76,23 +70,18 @@ async function run() {
 		// Else - the package type is not docker - download it
 		} else {
 			const downloadLink = payload.registry_package.package_version.package_files[0].download_url;
+			const downloadName = downloadLink.substr(downloadLink.lastIndexOf("/"));
 			core.info('downloadLink: ' + downloadLink);
-			const downloadedPackagePath = await tc.downloadTool(downloadLink);
-			core.info('downloadedPackagePath: ' + downloadedPackagePath);
-			uaVars = ['-jar', unifiedAgentPath + '/wss-unified-agent-integration-763.jar', 
-					  '-d', downloadedPackagePath,
+			core.info('downloadName: ' + downloadName);
+			await utilities.download2(downloadLink, downloadName);
+			uaVars = ['-jar', uaJarName,
+					  '-d', '.',
 					  '-wss.url', wsDestinationUrl,
 					  '-apiKey', wsApiKey,
 					  '-projectToken ', wsProjectKey,
 					  '-noConfig', 'true',
 					  '-generateScanReport', 'true',
 					  '-userKey', wsUserKey];
-					  
-			core.info('files in ua directory ' + unifiedAgentPath + ':');
-			await exec.exec('ls', [unifiedAgentPath, '-alF']);
-			
-			core.info('files in dosnloaded package directory ' + downloadedPackagePath + ':');
-			await exec.exec('ls', [downloadedPackagePath, '-alF']);
 		}
 		
 		// Run the UA
@@ -103,7 +92,7 @@ async function run() {
 		const options = {listeners: {}};
 		options.listeners.stdout = function(data) {
 			result += data.toString();
-		}
+		};
 		await exec.exec('find', ['.', '-name', '"*scan_report.json"'], options);
 		
 		// Set the output parameters
