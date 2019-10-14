@@ -5,8 +5,8 @@ const io = require('@actions/io');
 const utilities = require('./utilities');
 
 
-core.info('Event name' + github.context.eventName);
-core.info('Event path' + github.context.payload);
+core.info('Event name ' + github.context.eventName);
+core.info('Event path \n' + JSON.stringify(github.context.payload));
 let scanPath = '';
 
 // download('https://github.com/whitesource/unified-agent-distribution/releases/latest/download/wss-unified-agent.jar', "wss-unified-agent.jar", function (err) {
