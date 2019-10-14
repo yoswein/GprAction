@@ -5,9 +5,8 @@ const io = require('@actions/io');
 const utilities = require('./utilities');
 const tc = require('@actions/tool-cache');
 
-run();
 
-async run() {
+async function run() {
 	try {
 		core.info('Event name: ' + github.context.eventName);
 		core.info('Event payload: \n' + JSON.stringify(github.context.payload));
@@ -35,6 +34,7 @@ async run() {
 	}
 }
 
+run();
 
 // var scanPath = '';
 // download('https://github.com/whitesource/unified-agent-distribution/releases/latest/download/wss-unified-agent.jar', "wss-unified-agent.jar", function (err) {
