@@ -31,26 +31,10 @@ async function run() {
 		var unifiedAgentPath = await tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
 		core.info('unifiedAgentPath: ' + unifiedAgentPath);
 
-		let myOutput = '';
-		let myError = '';
-
-		const options = {};
-		options.listeners = {
-		  stdout: (data) => {
-			myOutput += data.toString();
-		  },
-		  stderr: (data) => {
-			myError += data.toString();
-		  }
-		};
-		options.cwd = './lib';
-
-		await exec.exec('docker', ['-v'], options);
-		core.info('Docker version is: ' + myOutput);
+		var result = await exec.exec('docker', ['-v']);
+		core.info('Docker version is: ' + result);
 		
-		myOutput = '';
-		myError = '';
-		await exec.exec('ls', ['-alF'], options);
+		var result = await exec.exec('ls', ['-alF']);
 		core.info('ls command output \n' + myOutput);
 		
 		const gprToken = core.getInput('gpr-token');
@@ -61,7 +45,6 @@ async function run() {
 
 
 	} catch (error) {
-		core.error('Exception: ' + error.message);
 		core.setFailed(error.message);
 	}
 }
