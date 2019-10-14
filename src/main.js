@@ -57,7 +57,7 @@ async function run() {
 			const packageName = payload.registry_package.name;
 			const packageVersion = payload.registry_package.package_version.version;
 			const repositoryFullName = payload.repository.full_name;
-			const packageUrl = 'docker.pkg.github.com/' + repositoryFullName + '/' + packageName + ':' + packageVersion;
+			const packageUrl = 'docker.pkg.github.com/' + repositoryFullName.toLowerCase() + '/' + packageName + ':' + packageVersion;
 			core.info('packageUrl: ' + packageUrl);
 			await exec.exec('docker', ['pull', packageUrl]);
 			
