@@ -10,7 +10,7 @@ const exec = require('@actions/exec');
 async function run() {
 	try {
 		core.info('Event name: ' + github.context.eventName);
-		core.info('Event payload: \n' + JSON.stringify(github.context.payload));
+		//core.info('Event payload: \n' + JSON.stringify(github.context.payload));
 
 		// Downlaod the UA
 		var unifiedAgentPath = await tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
@@ -60,7 +60,7 @@ async function run() {
 			// List existing docker images
 			await exec.exec('docker', ['images']);
 			
-			uaVars = ['-jar', unifiedAgentPath + '/wss-unified-agent.jar', 
+			uaVars = ['-jar', unifiedAgentPath + '/wss-unified-agent-integration-763.jar', 
 					  '-d', '.',
 					  '-wss.url', wsDestinationUrl,
 					  '-apiKey', wsApiKey,
@@ -75,7 +75,7 @@ async function run() {
 			core.info('downloadLink: ' + downloadLink);
 			var downloadedPackagePath = await tc.downloadTool(downloadLink);
 			core.info('downloadedPackagePath: ' + downloadedPackagePath);
-			uaVars = ['-jar', unifiedAgentPath + '/wss-unified-agent.jar', 
+			uaVars = ['-jar', unifiedAgentPath + '/wss-unified-agent-integration-763.jar', 
 					  '-d', downloadedPackagePath,
 					  '-wss.url', wsDestinationUrl,
 					  '-apiKey', wsApiKey,
