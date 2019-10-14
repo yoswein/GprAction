@@ -70,9 +70,8 @@ async function run() {
 		// Else - the package type is not docker - download it
 		} else {
 			const downloadLink = payload.registry_package.package_version.package_files[0].download_url;
-			const downloadName = downloadLink.substr(downloadLink.lastIndexOf("/"));
+			const downloadName = payload.registry_package.package_version.package_files[0].name;
 			core.info('downloadLink: ' + downloadLink);
-			core.info('downloadName: ' + downloadName);
 			await utilities.download2(downloadLink, downloadName);
 			uaVars = ['-jar', uaJarName,
 					  '-d', '.',
