@@ -89,7 +89,9 @@ async function run() {
         let logFilePath = '';
         const logFileFolder = './whitesource/';
         let files = fs.readdirSync(logFileFolder);
-        for(let i =0; i < files.length; i++) {
+        core.info('files in ' + logFileFolder + ' folder: ' + files.length);
+        core.info('files in ' + logFileFolder + ' folder: ' + files);
+        for(let i = 0; i < files.length; i++) {
             if (files[i].endsWith('scan_report.json')) {
                 logFilePath = logFileFolder + files[i];
                 break;
