@@ -121,13 +121,13 @@ run();
 function findSingleFile(directory, endsWith) {
 	let files = fs.readdirSync(directory);
 	for(let i = 0; i < files.length; i++) {
-		let file = files[i];
-		let stat = fs.statSync(file);
+		let filePath = directory + '/' + files[i];
+		let stat = fs.statSync(filePath);
 		if (stat && stat.isDirectory()) {
-			let fileName = findSingleFile(directory + '/' + file, endsWith);
+			let fileName = findSingleFile(filePath, endsWith);
 			if (fileName !== '') return fileName;
-		} else if (file.endsWith(endsWith)) {
-			return directory + '/' + file;
+		} else if (filePath.endsWith(endsWith)) {
+			return filePath;
 		}
 	}
 	return '';
