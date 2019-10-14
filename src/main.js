@@ -12,12 +12,12 @@ async function run() {
 		core.info('Event name: ' + github.context.eventName);
 		//core.info('Event payload: \n' + JSON.stringify(github.context.payload));
 
-		// Downlaod the UA
-		var testFilePath = await tc.downloadTool('https://nodejs.org/dist/v12.7.0/node-v12.7.0-linux-x64.tar.gz');
+		// Download the UA
+		const testFilePath = await utilities.download2('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar', 'wss-unified-agent.jar');
 		core.info('files in directory ' + testFilePath + ':');
 		await exec.exec('ls', [testFilePath, '-alF']);
-		
-		var unifiedAgentPath = await tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
+
+		const unifiedAgentPath = await tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
 		core.info('unifiedAgentPath: ' + unifiedAgentPath);
 
 		// List files in curr directory
@@ -28,11 +28,11 @@ async function run() {
 		const wsUserKey = core.getInput('ws-user-key');
 		const wsProjectKey = core.getInput('ws-project-key');
 
-		var uaVars = [];
+		let uaVars = [];
 		const payload = github.context.payload;
-		var packageType = payload.registry_package.package_type;
+		const packageType = payload.registry_package.package_type;
 		// If the package type is docker - pull it
-		if (packageType == 'docker') {
+		if (packageType === 'docker') {
 			
 			// Docker version
 			await exec.exec('docker', ['-v']);
@@ -47,17 +47,17 @@ async function run() {
 			const gprToken = core.getInput('gpr-token');
 			const octokit = new github.GitHub(gprToken);
 			const { data: user } = await octokit.users.getAuthenticated();
-			var gprUser = user.login;
+			const gprUser = user.login;
 			console.log('gprUser: ' + gprUser);
 		
 			// Execute the docker login command
 			await exec.exec('docker', ['login', 'docker.pkg.github.com', '-u', gprUser, '-p', gprToken]);
 
 			// Create and execute the docker pull command
-			var packageName = payload.registry_package.name;
-			var packageVersion = payload.registry_package.package_version.version;
-			var repositoryFullName = payload.repository.full_name;
-			var packageUrl = 'docker.pkg.github.com/' + repositoryFullName + '/' + packageName + ':' + packageVersion;
+			const packageName = payload.registry_package.name;
+			const packageVersion = payload.registry_package.package_version.version;
+			const repositoryFullName = payload.repository.full_name;
+			const packageUrl = 'docker.pkg.github.com/' + repositoryFullName + '/' + packageName + ':' + packageVersion;
 			core.info('packageUrl: ' + packageUrl);
 			await exec.exec('docker', ['pull', packageUrl]);
 			
@@ -75,9 +75,9 @@ async function run() {
 					  '-userKey', wsUserKey];
 		// Else - the package type is not docker - download it
 		} else {
-			var downloadLink = payload.registry_package.package_version.package_files[0].download_url;
+			const downloadLink = payload.registry_package.package_version.package_files[0].download_url;
 			core.info('downloadLink: ' + downloadLink);
-			var downloadedPackagePath = await tc.downloadTool(downloadLink);
+			const downloadedPackagePath = await tc.downloadTool(downloadLink);
 			core.info('downloadedPackagePath: ' + downloadedPackagePath);
 			uaVars = ['-jar', unifiedAgentPath + '/wss-unified-agent-integration-763.jar', 
 					  '-d', downloadedPackagePath,
@@ -108,8 +108,7 @@ async function run() {
 		
 		// Set the output parameters
 		core.setOutput("scan-report-file-path", result);
-		var n = result.lastIndexOf("/");
-		var folder = result.substr(0, n);
+		const folder = result.substr(0, result.lastIndexOf("/"));
 		core.setOutput("scan-report-folder-path", folder);
 	} catch (error) {
 		core.setFailed(error.message);

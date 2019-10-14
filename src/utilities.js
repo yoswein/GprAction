@@ -18,6 +18,23 @@ module.exports.download = function (url, dest, cb) {
     });
 };
 
+module.exports.download2 = function (url, dest) {
+	return new Promise((resolve, reject) => {
+		var file = fs.createWriteStream(dest);
+		var request = https.get(url, function (response) {
+			response.pipe(file);
+			file.on('finish', function () {
+				file.close();
+				console.log('Finished downloading file');
+				resolve(dest);
+			});
+		}).on('error', function (err) { // Handle errors
+			fs.unlink(dest);
+			reject(err.message);
+		});
+    });
+};
+
 module.exports.execShellCommand = function (command) {
     return new Promise((resolve, reject) => {
         nodeCmd.get(command, (err, data, stderr) => {
