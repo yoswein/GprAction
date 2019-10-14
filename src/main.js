@@ -90,13 +90,15 @@ async function run() {
 		const options = {listeners: {}};
 		options.listeners.stdout = function(data) {
 			result += data.toString();
+			console.log('result: ' + result);
 		};
 		await exec.exec('find', ['.', '-name', '"*scan_report.json"'], options);
 		
 		// Set the output parameters
-		core.setOutput("scan-report-file-path", result);
-		const folder = result.substr(0, result.lastIndexOf("/"));
-		core.setOutput("scan-report-folder-path", folder);
+        core.info('Scan log file: ' + result);
+		core.setOutput('scan-report-file-path', result);
+		const folder = result.substr(0, result.lastIndexOf('/'));
+		core.setOutput('scan-report-folder-path', folder);
 
 		await exec.exec('cat', [result]);
 	} catch (error) {
