@@ -12,43 +12,95 @@ async function run() {
 		core.info('Event name: ' + github.context.eventName);
 		core.info('Event payload: \n' + JSON.stringify(github.context.payload));
 
-		const payload = github.context.payload;
-		var packageType = payload.registry_package.package_type;
-		if (packageType == 'docker') {
-		  var packageName = payload.registry_package.name;
-		  var packageVersion = payload.registry_package.package_version.version;
-		  var repositoryFullName = payload.repository.full_name;
-		  var dockerPullCommand = 'docker pull docker.pkg.github.com/' + repositoryFullName + '/' + packageName + ':' + packageVersion;
-		  core.info('dockerPullCommand: ' + dockerPullCommand);
-		  await exec.exec(dockerPullCommand);
-		} else {
-		  var downloadLink = payload.registry_package.package_version.package_files[0].download_url;
-		  core.info('downloadLink: ' + downloadLink);
-		  var downloadedPackagePath = await tc.downloadTool(downloadLink);
-		  core.info('downloadedPackagePath: ' + downloadedPackagePath);
-		}
-		
+		// Downlaod the UA
 		var unifiedAgentPath = await tc.downloadTool('https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar');
 		core.info('unifiedAgentPath: ' + unifiedAgentPath);
 
-		const gprToken = core.getInput('gpr-token');
-		const octokit = new github.GitHub(gprToken);
-		const { data: user } = await octokit.users.getAuthenticated();
-		var gprUser = user.login;
-		console.log("gprUser: " + gprUser);
+		// List files in curr directory
+		await exec.exec('ls', ['-alF']);
 
+		const wsDestinationUrl = '"' + core.getInput('ws-destination-url') + '"';
+		const wsApiKey = core.getInput('ws-api-key');
+		const wsUserKey = core.getInput('ws-user-key');
+		const wsProjectKey = core.getInput('ws-project-key');
+
+		var uaVars = [];
+		const payload = github.context.payload;
+		var packageType = payload.registry_package.package_type;
+		// If the package type is docker - pull it
+		if (packageType == 'docker') {
+			
+			// Docker version
+			await exec.exec('docker', ['-v']);
+		
+			// List existing docker images
+			await exec.exec('docker', ['images']);
+			
+			// Remove existing docker images
+			await exec.exec('docker', ['rmi', '$(docker images -a -q)'])
+			
+			// Get the authenticated user of the gpr token
+			const gprToken = core.getInput('gpr-token');
+			const octokit = new github.GitHub(gprToken);
+			const { data: user } = await octokit.users.getAuthenticated();
+			var gprUser = user.login;
+			console.log('gprUser: ' + gprUser);
+		
+			// Execute the docker login command
+			await exec.exec('docker', ['login', 'docker.pkg.github.com', '-u', gprUser, '-p', gprToken]);
+
+			// Create and execute the docker pull command
+			var packageName = payload.registry_package.name;
+			var packageVersion = payload.registry_package.package_version.version;
+			var repositoryFullName = payload.repository.full_name;
+			var packageUrl = 'docker.pkg.github.com/' + repositoryFullName + '/' + packageName + ':' + packageVersion;
+			core.info('packageUrl: ' + packageUrl);
+			await exec.exec('docker', ['pull', packageUrl]);
+			
+			// List existing docker images
+			await exec.exec('docker', ['images']);
+			
+			uaVars = ['-jar', unifiedAgentPath + '/wss-unified-agent.jar', 
+					  '-d', '.',
+					  '-wss.url', wsDestinationUrl,
+					  '-apiKey', wsApiKey,
+					  '-projectToken ', wsProjectKey,
+					  '-noConfig', 'true',
+					  '-generateScanReport', 'true',
+					  '-"docker.scanImages"', 'true',
+					  '-userKey', wsUserKey];
+		// Else - the package type is not docker - download it
+		} else {
+			var downloadLink = payload.registry_package.package_version.package_files[0].download_url;
+			core.info('downloadLink: ' + downloadLink);
+			var downloadedPackagePath = await tc.downloadTool(downloadLink);
+			core.info('downloadedPackagePath: ' + downloadedPackagePath);
+			uaVars = ['-jar', unifiedAgentPath + '/wss-unified-agent.jar', 
+					  '-d', downloadedPackagePath,
+					  '-wss.url', wsDestinationUrl,
+					  '-apiKey', wsApiKey,
+					  '-projectToken ', wsProjectKey,
+					  '-noConfig', 'true',
+					  '-generateScanReport', 'true',
+					  '-userKey', wsUserKey];
+		}
+		
+		// Run the UA
+		await exec.exec('java', uaVars);
+		
+		// Get the location of the scan log file
 		let result = '';
 		const options = {listeners: {}};
 		options.listeners.stdout = function(data) {
 			result += data.toString();
 		}
-		await exec.exec('docker', ['-v', options]);
-		core.info('Docker version is: ' + result);
+		await exec.exec('find', ['.', '-name', '"*scan_report.json"'], options);
 		
-		result = '';
-		await exec.exec('ls', ['-alF'], options);
-		core.info('ls command output \n' + result);
-
+		// Set the output parameters
+		core.setOutput("scan-report-file-path", result);
+		var n = result.lastIndexOf("/");
+		var folder = result.substr(0, n);
+		core.setOutput("scan-report-folder-path", folder);
 	} catch (error) {
 		core.setFailed(error.message);
 	}
