@@ -95,16 +95,8 @@ async function run() {
 		await exec.exec('java', uaVars);
 		
 		// Get the location of the scan log file
-        let logFilePath = '';
-        const logFileFolder = './whitesource/';
-        let files = fs.readdirSync(logFileFolder);
-        for(let i = 0; i < files.length; i++) {
-            if (files[i].endsWith('scan_report.json')) {
-                logFilePath = logFileFolder + files[i];
-                break;
-            }
-        }
-
+		let logFilePath = findSingleFile('./whitesource/', 'scan_report.json');
+		let logFileFolder = logFilePath.substr(0, logFilePath.lastIndexOf('/'));
 		// Set the output parameters
 		core.setOutput('scan-report-file-path', logFilePath);
 		core.setOutput('scan-report-folder-path', logFileFolder);
@@ -125,3 +117,18 @@ async function run() {
 }
 
 run();
+
+function findSingleFile(directory, endsWith) {
+	let files = fs.readdirSync(directory);
+	for(let i = 0; i < files.length; i++) {
+		let file = files[i];
+		let stat = fs.statSync(file);
+		if (stat && stat.isDirectory()) {
+			let fileName = findSingleFile(directory + '/' + file, endsWith);
+			if (fileName !== '') return fileName;
+		} else if (file.endsWith(endsWith)) {
+			return directory + '/' + file;
+		}
+	}
+	return '';
+}
