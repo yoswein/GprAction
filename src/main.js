@@ -14,9 +14,6 @@ async function run() {
 		const uaJarName = 'wss-unified-agent.jar';
 		await utilities.download2(uaDownloadPath, uaJarName);
 
-		// List files in curr directory
-		await exec.exec('ls', ['-alF']);
-
 		const wsDestinationUrl = '"' + core.getInput('ws-destination-url') + '"';
 		const wsApiKey = core.getInput('ws-api-key');
 		const wsUserKey = core.getInput('ws-user-key');
@@ -71,7 +68,6 @@ async function run() {
 		} else {
 			const downloadLink = payload.registry_package.package_version.package_files[0].download_url;
 			const downloadName = payload.registry_package.package_version.package_files[0].name;
-			core.info('downloadLink: ' + downloadLink);
 			await utilities.download2(downloadLink, downloadName);
 			uaVars = ['-jar', uaJarName,
 					  '-d', '.',
@@ -82,7 +78,10 @@ async function run() {
 					  '-generateScanReport', 'true',
 					  '-userKey', wsUserKey];
 		}
-		
+
+		// List files in curr directory
+		await exec.exec('ls', ['-alF']);
+
 		// Run the UA
 		await exec.exec('java', uaVars);
 		
@@ -98,6 +97,8 @@ async function run() {
 		core.setOutput("scan-report-file-path", result);
 		const folder = result.substr(0, result.lastIndexOf("/"));
 		core.setOutput("scan-report-folder-path", folder);
+
+		await exec.exec('cat', [result]);
 	} catch (error) {
 		core.setFailed(error.message);
 	}
