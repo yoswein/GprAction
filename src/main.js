@@ -33,7 +33,7 @@ async function run() {
 			await exec.exec('docker', ['images']);
 			
 			// Remove all existing docker images
-			await exec.exec('docker rmi $(docker images -a -q)')
+			await exec.exec('docker rmi "$(docker images -a -q)"')
 			
 			// Get the authenticated user of the gpr token
 			const gprToken = core.getInput('gpr-token');
