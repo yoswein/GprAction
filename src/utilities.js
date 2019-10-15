@@ -1,25 +1,8 @@
 const fs = require('fs');
-const nodeCmd = require('node-cmd');
 const https = require('follow-redirects').https;
 const core = require('@actions/core');
 
-module.exports.download = function (url, dest, cb) {
-    var file = fs.createWriteStream(dest);
-    var request = https.get(url, function (response) {
-        response.pipe(file);
-        file.on('finish', function () {
-            file.close(cb);
-            console.log('Finished downloading file');
-        });
-    }).on('error', function (err) { // Handle errors
-        fs.unlink(dest);
-        if (cb) {
-            cb(err.message);
-        }
-    });
-};
-
-module.exports.download2 = function (url, dest) {
+module.exports.download = function (url, dest) {
 	return new Promise((resolve, reject) => {
 		var file = fs.createWriteStream(dest);
 		https.get(url, function (response) {
@@ -37,14 +20,17 @@ module.exports.download2 = function (url, dest) {
     });
 };
 
-module.exports.execShellCommand = function (command) {
-    return new Promise((resolve, reject) => {
-        nodeCmd.get(command, (err, data, stderr) => {
-            if (err) {
-                reject(stderr);
-            } else {
-                resolve(data);
-            }
-        });
-    });
-};
+module.exports.findSingleFile = function (directory, endsWith) {
+    let files = fs.readdirSync(directory);
+    for(let i = 0; i < files.length; i++) {
+        let filePath = directory + '/' + files[i];
+        let stat = fs.statSync(filePath);
+        if (stat && stat.isDirectory()) {
+            let fileName = findSingleFile(filePath, endsWith);
+            if (fileName !== '') return fileName;
+        } else if (filePath.endsWith(endsWith)) {
+            return filePath;
+        }
+    }
+    return '';
+}
