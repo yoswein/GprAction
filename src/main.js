@@ -59,8 +59,7 @@ async function run() {
 			const octokit = new github.GitHub(gprToken);
 			const { data: user } = await octokit.users.getAuthenticated();
 			const gprUser = user.login;
-			core.info('gprUser: ' + gprUser);
-		
+
 			// Execute the docker login command
 			await exec.exec('docker', ['login', 'docker.pkg.github.com', '-u', gprUser, '-p', gprToken]);
 

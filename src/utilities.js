@@ -33,4 +33,4 @@ module.exports.findSingleFile = function (directory, endsWith) {
         }
     }
     return '';
-}
+};
