@@ -21,12 +21,15 @@ module.exports.download = function (url, dest) {
 };
 
 module.exports.findSingleFile = function (directory, endsWith) {
+    core.info("test 1");
     let files = fs.readdirSync(directory);
     for(let i = 0; i < files.length; i++) {
         let filePath = directory + '/' + files[i];
         let stat = fs.statSync(filePath);
         if (stat && stat.isDirectory()) {
+            core.info("test 2");
             let fileName = findSingleFile(filePath, endsWith);
+            core.info("test 3");
             if (fileName !== '') return fileName;
         } else if (filePath.endsWith(endsWith)) {
             return filePath;
