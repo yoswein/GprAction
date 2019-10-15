@@ -10,7 +10,7 @@ async function run() {
 		//core.info('Event payload: \n' + JSON.stringify(github.context.payload));
 
 		// Download the UA
-		const uaDownloadPath = 'https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-763.jar';
+		const uaDownloadPath = 'https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-785.jar';
 		const uaJarName = 'wss-unified-agent.jar';
 		await utilities.download2(uaDownloadPath, uaJarName);
 
@@ -32,16 +32,17 @@ async function run() {
 			// List existing docker images
 			await exec.exec('docker', ['images']);
 
-			let result = '';
-			const options = {listeners: {}};
-			options.listeners.stdout = function(data) {
-				result += data.toString();
-			};
-			await exec.exec('docker', ['images', '-a', '-q'], options);
-			result = result.replace(/(\r\n|\n|\r)/gm," ");
-
-			// Remove all existing docker images
-			await exec.exec('docker rmi ' + result);
+			// // Get all existing docker image ids
+			// let result = '';
+			// const options = {listeners: {}};
+			// options.listeners.stdout = function(data) {
+			// 	result += data.toString();
+			// };
+			// await exec.exec('docker', ['images', '-a', '-q'], options);
+			// result = result.replace(/(\r\n|\n|\r)/gm," ");
+			//
+			// // Remove all existing docker images
+			// await exec.exec('docker rmi ' + result);
 			
 			// Get the authenticated user of the gpr token
 			const gprToken = core.getInput('gpr-token');
@@ -72,6 +73,7 @@ async function run() {
 					  '-noConfig', 'true',
 					  '-generateScanReport', 'true',
 					  '-docker.scanImages', 'true',
+				      '-docker.includeSingleScan', packageName,
 					  '-userKey', wsUserKey];
 		// Else - the package type is not docker - download it
 		} else {
