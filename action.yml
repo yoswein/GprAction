@@ -21,6 +21,10 @@ inputs:
     description: 'Whether to print the results report'
     required: false
     default: false
+  actions_step_debug:
+    description: 'Whether to print debug logs'
+    required: false
+    default: false
 outputs:
   scan-report-file-path:
     description: 'Path of the scan report file'
