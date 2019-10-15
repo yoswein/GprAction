@@ -21,6 +21,10 @@ module.exports.download = function (url, dest) {
 };
 
 module.exports.findSingleFile = function (directory, endsWith) {
+    return findSingleFileRecursive(directory, endsWith);
+};
+
+function findSingleFileRecursive (directory, endsWith) {
     core.info("test 1");
     let files = fs.readdirSync(directory);
     for(let i = 0; i < files.length; i++) {
@@ -28,7 +32,7 @@ module.exports.findSingleFile = function (directory, endsWith) {
         let stat = fs.statSync(filePath);
         if (stat && stat.isDirectory()) {
             core.info("test 2");
-            let fileName = findSingleFile(filePath, endsWith);
+            let fileName = findSingleFileRecursive(filePath, endsWith);
             core.info("test 3");
             if (fileName !== '') return fileName;
         } else if (filePath.endsWith(endsWith)) {
@@ -36,4 +40,4 @@ module.exports.findSingleFile = function (directory, endsWith) {
         }
     }
     return '';
-};
+}
