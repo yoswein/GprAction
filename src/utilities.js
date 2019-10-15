@@ -25,15 +25,12 @@ module.exports.findSingleFile = function (directory, endsWith) {
 };
 
 function findSingleFileRecursive (directory, endsWith) {
-    core.info("test 1");
     let files = fs.readdirSync(directory);
     for(let i = 0; i < files.length; i++) {
         let filePath = directory + '/' + files[i];
         let stat = fs.statSync(filePath);
         if (stat && stat.isDirectory()) {
-            core.info("test 2");
             let fileName = findSingleFileRecursive(filePath, endsWith);
-            core.info("test 3");
             if (fileName !== '') return fileName;
         } else if (filePath.endsWith(endsWith)) {
             return filePath;
