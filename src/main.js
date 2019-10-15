@@ -14,7 +14,7 @@ async function run() {
 		const uaJarName = 'wss-unified-agent.jar';
 		await utilities.download2(uaDownloadPath, uaJarName);
 
-		const wsDestinationUrl = '"' + core.getInput('ws-destination-url') + '"';
+		const wsDestinationUrl = core.getInput('ws-destination-url');
 		const wsApiKey = core.getInput('ws-api-key');
 		const wsUserKey = core.getInput('ws-user-key');
 		const wsProjectKey = core.getInput('ws-project-key');
@@ -73,7 +73,7 @@ async function run() {
 					  '-noConfig', 'true',
 					  '-generateScanReport', 'true',
 					  '-docker.scanImages', 'true',
-				      '-docker.includeSingleScan', packageName,
+				      '-docker.includeSingleScan', '.*' + packageName + '.*',
 					  '-userKey', wsUserKey];
 		// Else - the package type is not docker - download it
 		} else {
