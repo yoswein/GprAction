@@ -87,7 +87,7 @@ async function run() {
 		// Else - the package type is not docker - download it
 		} else {
 			// Download all package files
-			for (let i = 0; i < payload.registry_package.package_version.package_files; i++) {
+			for (let i = 0; i < payload.registry_package.package_version.package_files.length; i++) {
 				let packageFile = payload.registry_package.package_version.package_files[i];
 				let downloadLink = packageFile.download_url;
 				let downloadName = packageFile.name;
