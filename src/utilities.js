@@ -13,7 +13,7 @@ module.exports.download = function (url, dest) {
 				resolve(dest);
 			});
 		}).on('error', function (err) { // Handle errors
-            core.error('Failed downloading file ' + url);
+            core.error('Failed downloading file ' + url + '. Error: ' + err.message);
 			fs.unlinkSync(dest);
 			reject(err.message);
 		});
