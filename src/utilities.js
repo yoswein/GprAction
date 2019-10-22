@@ -14,7 +14,7 @@ module.exports.download = function (url, dest) {
 			});
 		}).on('error', function (err) { // Handle errors
             core.error('Failed downloading file ' + url);
-			fs.unlink(dest);
+			fs.unlinkSync(dest);
 			reject(err.message);
 		});
     });
