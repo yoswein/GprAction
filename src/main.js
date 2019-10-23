@@ -12,7 +12,7 @@ async function run() {
 		const wsDestinationUrl = core.getInput('ws-destination-url');
 		const wsApiKey = core.getInput('ws-api-key');
 		const wsUserKey = core.getInput('ws-user-key');
-		const wsProjectKey = core.getInput('ws-project-key');
+		const wsProductKey = core.getInput('ws-product-key');
 		const debugMode = core.getInput('actions_step_debug');
 		const uaJarName = 'wss-unified-agent.jar';
 		const uaDownloadPath = 'https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-785.jar';
@@ -24,8 +24,8 @@ async function run() {
 		} else if (wsUserKey == null || wsUserKey.trim().length < 20) {
 			core.setFailed('Invalid input: ws-user-key');
 			return;
-		} else if (wsProjectKey == null || wsProjectKey.trim().length < 20) {
-			core.setFailed('Invalid input: ws-project-key');
+		} else if (wsProductKey == null || wsProductKey.trim().length < 20) {
+			core.setFailed('Invalid input: ws-product-key');
 			return;
 		} else if (wsDestinationUrl == null || wsDestinationUrl.trim().length === 0 ||
 				   !wsDestinationUrl.startsWith('http') || !wsDestinationUrl.endsWith('/agent')) {
@@ -77,7 +77,7 @@ async function run() {
 			uaVars = ['-jar', uaJarName,
 					  '-wss.url', wsDestinationUrl,
 					  '-apiKey', wsApiKey,
-					  '-projectToken ', wsProjectKey,
+					  '-productToken ', wsProductKey,
 					  '-noConfig', 'true',
 					  '-generateScanReport', 'true',
 					  '-docker.scanImages', 'true',
@@ -97,7 +97,7 @@ async function run() {
 					  '-d', '.',
 					  '-wss.url', wsDestinationUrl,
 					  '-apiKey', wsApiKey,
-					  '-projectToken ', wsProjectKey,
+					  '-productToken ', wsProductKey,
 					  '-noConfig', 'true',
 					  '-generateScanReport', 'true',
 					  '-userKey', wsUserKey];

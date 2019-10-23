@@ -14,8 +14,8 @@ inputs:
   ws-user-key:
     description: 'WS user key'
     required: true
-  ws-project-key:
-    description: 'WS project key to publish results to'
+  ws-product-key:
+    description: 'WS product key to publish results to'
     required: true
   print-scan-report:
     description: 'Whether to print the results report'
