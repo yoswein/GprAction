@@ -78,6 +78,7 @@ async function run() {
 					  '-wss.url', wsDestinationUrl,
 					  '-apiKey', wsApiKey,
 					  '-productToken ', wsProductKey,
+					  '-project ', packageName,
 					  '-noConfig', 'true',
 					  '-generateScanReport', 'true',
 					  '-docker.scanImages', 'true',
@@ -98,6 +99,7 @@ async function run() {
 					  '-wss.url', wsDestinationUrl,
 					  '-apiKey', wsApiKey,
 					  '-productToken ', wsProductKey,
+					  '-project ', payload.registry_package.name,
 					  '-noConfig', 'true',
 					  '-generateScanReport', 'true',
 					  '-userKey', wsUserKey];
