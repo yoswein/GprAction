@@ -6,7 +6,7 @@ It scans the published/updated Docker image in GPR and reports back with found s
 # Usage
 See [action.yml](action.yml)
 
-## Input Parameters
+### Input Parameters
 **gpr-token**: GitHub personal access token with read/write privileges to GPR.
 
 **ws-destination-url**: WhiteSource environment destination url.
@@ -22,12 +22,12 @@ See [action.yml](action.yml)
 **actions_step_debug**: Whether to print debug logs. Default is false.
 @TODO should we provide more explanation + images about where to get the tokens and destination url?
 
-## Output Parameters
+### Output Parameters
 **scan-report-file-path**: Path of the scan report file.
 
 **scan-report-folder-path**: Path of the folder of the scan report file.
 
-## Workflow Examples
+### Workflow Examples
 The recommended way to add this action to your workflow, is with a subsequent action that uploads the report json as an artifact. For example:
 ```yaml
 on: registry_package
@@ -189,4 +189,6 @@ The output is a report in json format, which includes information on vulnerabili
 }
 ```
 
+# License
 
+The scripts and documentation in this project are NOT released under the [MIT License](LICENSE)
