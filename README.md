@@ -1,113 +1,100 @@
-# Create a JavaScript Action using TypeScript
+# Whitesource GPR Security Action
+This action is designed to run as part of a workflow triggered by a "registry_package" event.
 
-Use this template to bootstrap the creation of a JavaScript action.:rocket:
+It scans the published GPR package and reports any security vulnerabilities found.
 
-This template includes compilication support, tests, a validation workflow, publishing, and versioning guidance.  
+## Input Parameters
+gpr-token: GitHub personal access token with read/write privileges to GPR.
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+ws-destination-url: WhiteSource environment destination url.
 
-## Create an action from this template
+ws-api-key: WhiteSource organization api key.
 
-Click the `Use this Template` and provide the new repo details for your action
+ws-user-key: WhiteSource user key.
 
-## Code in Master
+ws-product-key: WhiteSource product key to publish results to.
 
-Install the dependencies  
-```bash
-$ npm install
-```
+print-scan-report: Whether to print the results report as part opf the action's log. Default is false.
 
-Build the typescript
-```bash
-$ npm run build
-```
+actions_step_debug: Whether to print debug logs. Default is false.
 
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
 
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
+## Output Parameters
+scan-report-file-path: Path of the scan report file.
 
-...
-```
+scan-report-folder-path: Path of the folder of the scan report file.
 
-## Change action.yml
 
-The action.yml contains defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
+## Scan Report File
+The output is a report in json format, which includes information on vulnerabilities, policy violations, top fixes and inventory details. For example:
+```json
+{
+  "projectVitals": {
+    "productName": "fsa",
+    "name": "fsa",
+    "token": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "creationDate": "2017-06-17 07:12:29",
+    "lastUpdatedDate": "2017-06-17 07:34:31"
+  },
+  "libraries": [
+    {
+      "keyUuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "keyId": 24559109,
+      "name": "comm-2.0.3.jar",
+      "artifactId": "comm-2.0.3.jar",
+      "type": "MAVEN_ARTIFACT",
+      "licenses": [],
+      "vulnerabilities": [],
+      "outdated": false,
+      "matchType": "FILENAME"
+    }
+  ]
 }
-
-run()
 ```
 
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos.  We will create a releases branch and only checkin production modules (core in this case). 
-
-Comment out node_modules in .gitignore and create a releases/v1 branch
-```bash
-# comment out in distribution branches
-# node_modules/
-```
-
-```bash
-$ git checkout -b releases/v1
-$ git commit -a -m "prod dependencies"
-```
-
-```bash
-$ npm prune --production
-$ git add node_modules
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing the releases/v1 branch
-
+## Workflow Examples
+The recommended way to add this action to your workflow, is with a subsequent action that upload the report json as an artifact. For example:
 ```yaml
-uses: actions/typescript-action@releases/v1
-with:
-  milliseconds: 1000
+on: registry_package
+name: WORKFLOW_NAME
+jobs:
+  gprSecurityJob:
+    name: GPR Security Check Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: GPR Security Check Step
+        id: gpr-security-check
+        uses: whitesource/GprSecurityAction@19.10.2
+        with:
+          gpr-token: ${{ secrets.GPR_ACCESS_TOKEN }}
+          ws-api-key: ${{ secrets.WS_API_KEY }}
+          ws-user-key: ${{ secrets.WS_USER_KEY }}
+          ws-product-key: ${{ secrets.WS_PRODUCT_KEY }}
+          ws-destination-url: https://saas.whitesourcesoftware.com/agent
+      - name: Upload Report
+        uses: actions/upload-artifact@master
+        with:
+          name: security-scan-log
+          path: ${{ steps.gpr-security-check.outputs.scan-report-folder-path }}
 ```
 
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:
-
-## Usage:
-
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and tested action
-
+Another option is to print the scan report to the step's log, without uploading it as an artifact:
 ```yaml
-uses: actions/typescript-action@v1
-with:
-  milliseconds: 1000
+on: registry_package
+name: WORKFLOW_NAME
+jobs:
+  gprSecurityJob:
+    name: GPR Security Check Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: GPR Security Check Step
+        id: gpr-security-check
+        uses: whitesource/GprSecurityAction@19.10.2
+        with:
+          gpr-token: ${{ secrets.GPR_ACCESS_TOKEN }}
+          ws-api-key: ${{ secrets.WS_API_KEY }}
+          ws-user-key: ${{ secrets.WS_USER_KEY }}
+          ws-product-key: ${{ secrets.WS_PRODUCT_KEY }}
+          ws-destination-url: https://saas.whitesourcesoftware.com/agent
+          print-scan-report: true
 ```
