@@ -78,7 +78,8 @@ async function run() {
 					  '-generateScanReport', 'true',
 					  '-docker.scanImages', 'true',
 				      '-docker.includeSingleScan', '.*' + packageName + '.*',
-					  '-userKey', wsUserKey];
+					  '-userKey', wsUserKey,
+					  '-project', payload.registry_package.name];
 
 		// Else - the package type is not docker - download it
 		} else {
@@ -95,12 +96,12 @@ async function run() {
 					  '-apiKey', wsApiKey,
 					  '-noConfig', 'true',
 					  '-generateScanReport', 'true',
-					  '-userKey', wsUserKey];
+					  '-userKey', wsUserKey,
+					  '-project', payload.registry_package.name];
 		}
 
 		if (wsProductKey != null && wsProductKey.trim().length > 20) {
-			uaVars.push('-productToken', wsProductKey,
-				        '-project', payload.registry_package.name);
+			uaVars.push('-productToken', wsProductKey);
 		}
 
 		if (debugMode === 'true') {
