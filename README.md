@@ -4,25 +4,25 @@ This action is designed to run as part of a workflow triggered by a "registry_pa
 It scans the published GPR package and reports any security vulnerabilities found.
 
 ## Input Parameters
-gpr-token: GitHub personal access token with read/write privileges to GPR.
+**gpr-token**: GitHub personal access token with read/write privileges to GPR.
 
-ws-destination-url: WhiteSource environment destination url.
+**ws-destination-url**: WhiteSource environment destination url.
 
-ws-api-key: WhiteSource organization api key.
+**ws-api-key**: WhiteSource organization api key.
 
-ws-user-key: WhiteSource user key.
+**ws-user-key**: WhiteSource user key.
 
-ws-product-key: WhiteSource product key to publish results to.
+**ws-product-key**: WhiteSource product key to publish results to.
 
-print-scan-report: Whether to print the results report as part opf the action's log. Default is false.
+**print-scan-report**: Whether to print the results report as part opf the action's log. Default is false.
 
-actions_step_debug: Whether to print debug logs. Default is false.
+**actions_step_debug**: Whether to print debug logs. Default is false.
 
 
 ## Output Parameters
-scan-report-file-path: Path of the scan report file.
+**scan-report-file-path**: Path of the scan report file.
 
-scan-report-folder-path: Path of the folder of the scan report file.
+**scan-report-folder-path**: Path of the folder of the scan report file.
 
 
 ## Scan Report File
