@@ -1,7 +1,7 @@
 # Whitesource GPR Security Action
 This action is designed to run as part of the workflow "registry_package" [triggered event](https://help.github.com/en/github/automating-your-workflow-with-github-actions/events-that-trigger-workflows).
 
-It scans the published GPR package and reports any security vulnerabilities found.
+It scans the published/updated Docker image in GPR and reports back with found security vulnerabilities and license information.
 
 ## Input Parameters
 **gpr-token**: GitHub personal access token with read/write privileges to GPR.
@@ -17,7 +17,7 @@ It scans the published GPR package and reports any security vulnerabilities foun
 **print-scan-report**: Whether to print the results report as part opf the action's log. Default is false.
 
 **actions_step_debug**: Whether to print debug logs. Default is false.
-
+@TODO should we provide more explanation + images about where to get the tokens and destination url?
 
 ## Output Parameters
 **scan-report-file-path**: Path of the scan report file.
@@ -26,7 +26,7 @@ It scans the published GPR package and reports any security vulnerabilities foun
 
 
 ## Scan Report File
-The output is a report in json format, which includes information on vulnerabilities, policy violations, top fixes and inventory details. For example:
+The output is a report in json format, which includes information on vulnerabilities, license, top fixes and inventory details. For example:
 ```json
 {
   "projectVitals": {
