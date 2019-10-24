@@ -16,7 +16,7 @@ inputs:
     required: true
   ws-product-key:
     description: 'WS product key to publish results to'
-    required: true
+    required: false
   print-scan-report:
     description: 'Whether to print the results report'
     required: false
