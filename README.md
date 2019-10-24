@@ -7,15 +7,15 @@ It scans the published/updated Docker image in GPR and reports back with found s
 See [action.yml](action.yml)
 
 ### Input Parameters
-**gpr-token**: GitHub personal access token with read/write privileges to GPR. We strongly recommend configuring this parameter as a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables).
+**gpr-token**: GitHub personal access token with read/write privileges to GPR. This parameter must be a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables).
 
 **ws-destination-url**: WhiteSource environment destination url.
 
-**ws-api-key**: WhiteSource organization api key. We strongly recommend configuring this parameter as a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables).
+**ws-api-key**: WhiteSource organization api key. This parameter must be a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables).
 
-**ws-user-key**: WhiteSource user key. We strongly recommend configuring this parameter as a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables).
+**ws-user-key**: WhiteSource user key. This parameter must be a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables).
 
-**ws-product-key**: WhiteSource product key to publish results to. We strongly recommend configuring this parameter as a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables).
+**ws-product-key**: WhiteSource product key to publish results to. This parameter must be a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables). Is not specified - a default product will be created.
 
 **print-scan-report**: Whether to print the results report as part opf the action's log. Default is false.
 
