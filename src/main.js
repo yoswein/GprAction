@@ -24,9 +24,6 @@ async function run() {
 		} else if (wsUserKey == null || wsUserKey.trim().length < 20) {
 			core.setFailed('Invalid input: ws-user-key');
 			return;
-		} else if (wsProductKey == null || wsProductKey.trim().length < 20) {
-			core.setFailed('Invalid input: ws-product-key');
-			return;
 		} else if (wsDestinationUrl == null || wsDestinationUrl.trim().length === 0 ||
 				   !wsDestinationUrl.startsWith('http') || !wsDestinationUrl.endsWith('/agent')) {
 			core.setFailed('Invalid input: ws-destination-url');
@@ -77,8 +74,6 @@ async function run() {
 			uaVars = ['-jar', uaJarName,
 					  '-wss.url', wsDestinationUrl,
 					  '-apiKey', wsApiKey,
-					  '-productToken', wsProductKey,
-					  '-project', packageName,
 					  '-noConfig', 'true',
 					  '-generateScanReport', 'true',
 					  '-docker.scanImages', 'true',
@@ -98,11 +93,14 @@ async function run() {
 					  '-d', '.',
 					  '-wss.url', wsDestinationUrl,
 					  '-apiKey', wsApiKey,
-					  '-productToken', wsProductKey,
-					  '-project', payload.registry_package.name,
 					  '-noConfig', 'true',
 					  '-generateScanReport', 'true',
 					  '-userKey', wsUserKey];
+		}
+
+		if (wsProductKey != null && wsProductKey.trim().length > 20) {
+			uaVars.push('-productToken', wsProductKey,
+				        '-project', payload.registry_package.name);
 		}
 
 		if (debugMode === 'true') {
