@@ -15,7 +15,8 @@ async function run() {
 		const wsProductKey = core.getInput('ws-product-key');
 		const debugMode = core.getInput('actions_step_debug');
 		const uaJarName = 'wss-unified-agent.jar';
-		const uaDownloadPath = 'https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-785.jar';
+		// const uaDownloadPath = 'https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-785.jar';
+		const uaDownloadPath = 'https://github.com/whitesource/unified-agent-distribution/releases/latest/download/wss-unified-agent.jar'
 
 		// Validate inputs
 		if (wsApiKey == null || wsApiKey.trim().length < 20) {
