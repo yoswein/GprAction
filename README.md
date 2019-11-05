@@ -1,113 +1,140 @@
-# Create a JavaScript Action using TypeScript
+# Whitesource GPR Security Action
+This action is designed to run as part of the workflow `registry_package` [triggered event](https://help.github.com/en/github/automating-your-workflow-with-github-actions/events-that-trigger-workflows).
 
-Use this template to bootstrap the creation of a JavaScript action.:rocket:
+It scans the published/updated Docker image in GPR and reports back with found security vulnerabilities and license information.
 
-This template includes compilication support, tests, a validation workflow, publishing, and versioning guidance.  
+# Usage
+See [action.yml](action.yml)
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+### Input Parameters
+**gpr-token**: GitHub personal access token with read/write privileges to GPR. We strongly recommend storing this parameter's value as a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables): in our workflow we use a repository secret named GPR_ACCESS_TOKEN. Required parameter.
 
-## Create an action from this template
+**ws-destination-url**: WhiteSource environment destination url. Required parameter.
 
-Click the `Use this Template` and provide the new repo details for your action
+**ws-api-key**: WhiteSource organization api key. We strongly recommend storing this parameter's value as a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables): in our workflow we use a repository secret named WS_API_KEY. Required parameter.
 
-## Code in Master
+**ws-user-key**: WhiteSource user key. We strongly recommend storing this parameter's value as a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables): in our workflow we use a repository secret named WS_USER_KEY. Required parameter.
 
-Install the dependencies  
-```bash
-$ npm install
+**ws-product-key**: WhiteSource product key to publish results to. TWe strongly recommend storing this parameter's value as a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables): in our workflow we use a repository secret named WS_PRODUCT_KEY. If not specified - a default product will be created.
+
+**print-scan-report**: Whether to print the results report as part opf the action's log. Default is false.
+
+**actions_step_debug**: Whether to print debug logs. Default is false.
+
+### Output Parameters
+**scan-report-file-path**: Path of the scan report file.
+
+**scan-report-folder-path**: Path of the folder of the scan report file.
+
+### Workflow Examples
+The recommended way to add this action to your workflow, is with a subsequent action that uploads the report json as an artifact. For example:
+```yaml
+on: registry_package
+name: WORKFLOW_NAME
+jobs:
+  gprSecurityJob:
+    name: GPR Security Check Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: GPR Security Check Step
+        id: gpr-security-check
+        uses: whitesource/GprSecurityAction@19.10.2
+        with:
+          gpr-token: ${{ secrets.GPR_ACCESS_TOKEN }}
+          ws-api-key: ${{ secrets.WS_API_KEY }}
+          ws-user-key: ${{ secrets.WS_USER_KEY }}
+          ws-product-key: ${{ secrets.WS_PRODUCT_KEY }}
+          ws-destination-url: https://saas.whitesourcesoftware.com/agent
+      - name: Upload Report
+        uses: actions/upload-artifact@master
+        with:
+          name: security-scan-log
+          path: ${{ steps.gpr-security-check.outputs.scan-report-folder-path }}
 ```
 
-Build the typescript
-```bash
-$ npm run build
+Another option is to print the scan report to the step's log, without uploading it as an artifact:
+```yaml
+on: registry_package
+name: WORKFLOW_NAME
+jobs:
+  gprSecurityJob:
+    name: GPR Security Check Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: GPR Security Check Step
+        id: gpr-security-check
+        uses: whitesource/GprSecurityAction@19.10.2
+        with:
+          gpr-token: ${{ secrets.GPR_ACCESS_TOKEN }}
+          ws-api-key: ${{ secrets.WS_API_KEY }}
+          ws-user-key: ${{ secrets.WS_USER_KEY }}
+          ws-product-key: ${{ secrets.WS_PRODUCT_KEY }}
+          ws-destination-url: https://saas.whitesourcesoftware.com/agent
+          print-scan-report: true
 ```
 
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
 
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-
-...
-```
-
-## Change action.yml
-
-The action.yml contains defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
+# Scan Report File
+The output is a report in json format, which includes information on vulnerabilities, license, top fixes and inventory details. For example:
+```json
+{
+  "projectVitals": {
+    "productName": "demo product",
+    "name": "demo project",
+    "token": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  },
+  "libraries": [
+    {
+      "keyUuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "keyId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "type": "REDHAT_PACKAGE_MODULE",
+      "languages": "RPM",
+      "references": {
+        "url": "http://mirror.centos.org/centos/7/os/x86_64/Packages/sqlite-3.7.17-8.el7.x86_64.rpm",
+        "homePage": "http://www.sqlite.org/"
+      },
+      "outdated": true,
+      "sha1": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "name": "sqlite.rpm",
+      "artifactId": "sqlite.rpm",
+      "version": "3.7.17-8.el7",
+      "groupId": "sqlite",
+      "licenses": [
+        {
+          "name": "Public Domain",
+          "url": "http://creativecommons.org/licenses/publicdomain/",
+          "profileInfo": {
+            "copyrightRiskScore": "ONE",
+            "patentRiskScore": "THREE",
+            "copyleft": "NO",
+            "linking": "NON_VIRAL",
+            "royaltyFree": "NO"
+          },
+          "referenceType": "RPM (details available in package spec file)",
+          "reference": "packageName\u003dsqlite\u0026url\u003dhttp://mirror.centos.org/centos/7/os/x86_64/Packages/sqlite-3.7.17-8.el7.x86_64.rpm"
+        }
+      ],
+      "vulnerabilities": [
+        {
+          "name": "CVE-2018-8740",
+          "type": "CVE",
+          "severity": "MEDIUM",
+          "score": 5.0,
+          "cvss3_severity": "HIGH",
+          "cvss3_score": 7.5,
+          "scoreMetadataVector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "publishDate": "2018-03-17",
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name\u003dCVE-2018-8740",
+          "description": "In SQLite through 3.22.0, databases whose schema is corrupted using a CREATE TABLE AS statement could cause a NULL pointer dereference, related to build.c and prepare.c.",
+          "allFixes": [],
+          "references": []
+        }
+      ]
+    }
+  ]
 }
-
-run()
 ```
 
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
+# License
 
-## Publish to a distribution branch
-
-Actions are run from GitHub repos.  We will create a releases branch and only checkin production modules (core in this case). 
-
-Comment out node_modules in .gitignore and create a releases/v1 branch
-```bash
-# comment out in distribution branches
-# node_modules/
-```
-
-```bash
-$ git checkout -b releases/v1
-$ git commit -a -m "prod dependencies"
-```
-
-```bash
-$ npm prune --production
-$ git add node_modules
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing the releases/v1 branch
-
-```yaml
-uses: actions/typescript-action@releases/v1
-with:
-  milliseconds: 1000
-```
-
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:
-
-## Usage:
-
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and tested action
-
-```yaml
-uses: actions/typescript-action@v1
-with:
-  milliseconds: 1000
-```
+The scripts and documentation in this project are released under the [Apache 2.0](LICENSE) license.
