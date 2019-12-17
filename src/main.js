@@ -40,14 +40,15 @@ async function run() {
 			if (imageNameParts.length > 1) {
 				regexFriendlyImageName = '.*' + imageNameParts[0] + '.*' + imageNameParts[1] + '.*';
 			}
-			let config = 'checkPolicies=true';
+			let config =
+				'checkPolicies=true\n' +
+			    'docker.includes=' + regexFriendlyImageName;
 			fs.writeFileSync('wss-unified-agent.config', config);
 			uaVars = ['-jar', uaJarName,
 				'-wss.url', wsDestinationUrl,
 				'-apiKey', wsApiKey,
 				'-generateScanReport', 'true',
 				'-docker.scanImages', 'true',
-				'-docker.includeSingleScan', regexFriendlyImageName,
 				'-userKey', wsUserKey,
 				'-project', imageNameParts[0]];
 		} else {
