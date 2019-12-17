@@ -43,7 +43,8 @@ async function run() {
 			let config =
 				'checkPolicies=true\n' +
 				'docker.includes=' + regexFriendlyImageName + '\n' +
-				'includes=' + regexFriendlyImageName+ '\n' +
+				'includes=.*\n' +
+				'excludes=' + uaJarName + '\n' +
 				'updateType=OVERRIDE\n' +
 				'updateInventory=true\n' +
 				'forceUpdate=true\n' +
