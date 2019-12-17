@@ -14,7 +14,7 @@ async function run() {
 		const wsUserKey = core.getInput('ws-user-key');
 		const wsProductKey = core.getInput('ws-product-key');
 		const debugMode = core.getInput('actions_step_debug');
-		const imageName = core.getInput('image-name');
+		const imageName = core.getInput('docker-image-identifier');
 		const failOnPolicyViolations = core.getInput('fail-on-policy-violations');
 		const uaJarName = 'wss-unified-agent.jar';
 		// const uaDownloadPath = 'https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-785.jar';
@@ -35,15 +35,20 @@ async function run() {
 
 		let uaVars = [];
 		if (imageName != null && imageName.trim().length > 0) {
+			let imageNameParts = imageName.split(':');
+			let regexFriendlyImageName;
+			if (imageNameParts.length > 1) {
+				regexFriendlyImageName = '.*' + imageNameParts[0] + '.*' + imageNameParts[1] + '.*';
+			}
 			uaVars = ['-jar', uaJarName,
 				'-wss.url', wsDestinationUrl,
 				'-apiKey', wsApiKey,
 				'-noConfig', 'true',
 				'-generateScanReport', 'true',
 				'-docker.scanImages', 'true',
-				'-docker.includeSingleScan', '.*' + imageName + '.*',
+				'-docker.includeSingleScan', regexFriendlyImageName,
 				'-userKey', wsUserKey,
-				'-project', imageName];
+				'-project', imageNameParts[0]];
 		} else {
 			const payload = github.context.payload;
 			const packageType = payload.registry_package.package_type;
