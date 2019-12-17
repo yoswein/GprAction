@@ -45,7 +45,6 @@ async function run() {
 			uaVars = ['-jar', uaJarName,
 				'-wss.url', wsDestinationUrl,
 				'-apiKey', wsApiKey,
-				'-noConfig', 'true',
 				'-generateScanReport', 'true',
 				'-docker.scanImages', 'true',
 				'-docker.includeSingleScan', regexFriendlyImageName,
