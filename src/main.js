@@ -40,17 +40,17 @@ async function run() {
 			if (imageNameParts.length > 1) {
 				regexFriendlyImageName = '.*' + imageNameParts[0] + '.*' + imageNameParts[1] + '.*';
 			}
-			let config =
-				'wss.url=' + wsDestinationUrl + '\n' +
-				'apiKey=' + wsApiKey + '\n' +
-				'userKey=' + wsUserKey + '\n' +
-				'generateScanReport=true\n' +
-				'checkPolicies=true\n' +
-				'docker.scanImages=true\n' +
-				'docker.includes=' + regexFriendlyImageName + '\n' +
-				'project=' + imageNameParts[0];
-			uaVars = ['-jar', uaJarName];
+			let config = 'checkPolicies=true';
 			fs.writeFileSync('wss-unified-agent.config', config);
+			uaVars = ['-jar', uaJarName,
+				'-wss.url', wsDestinationUrl,
+				'-apiKey', wsApiKey,
+				'-noConfig', 'true',
+				'-generateScanReport', 'true',
+				'-docker.scanImages', 'true',
+				'-docker.includeSingleScan', regexFriendlyImageName,
+				'-userKey', wsUserKey,
+				'-project', imageNameParts[0]];
 		} else {
 			const payload = github.context.payload;
 			const packageType = payload.registry_package.package_type;
@@ -136,7 +136,7 @@ async function run() {
 
 		// Run the UA
 		await exec.exec('java', uaVars);
-		
+
 		// Get the location of the scan log file
 		let logFilePath = utilities.findSingleFile('./whitesource/', 'scan_report.json');
 		let logFileFolder = logFilePath.substr(0, logFilePath.lastIndexOf('/'));
