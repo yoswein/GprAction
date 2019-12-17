@@ -45,6 +45,7 @@ async function run() {
 				'-apiKey', wsApiKey,
 				'-noConfig', 'true',
 				'-generateScanReport', 'true',
+				'-checkPolicies', 'true',
 				'-docker.scanImages', 'true',
 				'-docker.includeSingleScan', regexFriendlyImageName,
 				'-userKey', wsUserKey,
