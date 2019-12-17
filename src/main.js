@@ -169,8 +169,8 @@ async function run() {
 			if (logFilePath.length > 0) {
 				let scanReport = fs.readFileSync(logFilePath, 'utf8');
 				let scanReportJson = JSON.parse(scanReport);
-				if (scanReportJson.policyStatistics.totalIssues > 0) {
-					core.setFailed('Found ' + scanReportJson.policyStatistics.totalIssues > 0 + ' policy violations');
+				if (scanReportJson.policyStatistics.totalRejected > 0) {
+					core.setFailed('Found ' + scanReportJson.policyStatistics.totalRejected > 0 + ' policy violations');
 				} else {
 					core.info('No policy violations found');
 				}
