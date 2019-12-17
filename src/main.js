@@ -40,16 +40,17 @@ async function run() {
 			if (imageNameParts.length > 1) {
 				regexFriendlyImageName = '.*' + imageNameParts[0] + '.*' + imageNameParts[1] + '.*';
 			}
-			uaVars = ['-jar', uaJarName,
-				'-wss.url', wsDestinationUrl,
-				'-apiKey', wsApiKey,
-				'-noConfig', 'true',
-				'-generateScanReport', 'true',
-				'-checkPolicies', 'true',
-				'-docker.scanImages', 'true',
-				'-docker.includeSingleScan', regexFriendlyImageName,
-				'-userKey', wsUserKey,
-				'-project', imageNameParts[0]];
+			let config =
+				'wss.url=' + wsDestinationUrl + '\n' +
+				'apiKey=' + wsApiKey + '\n' +
+				'userKey=' + wsUserKey + '\n' +
+				'generateScanReport=true\n' +
+				'checkPolicies=true\n' +
+				'docker.scanImages=true\n' +
+				'docker.includes=' + regexFriendlyImageName + '\n' +
+				'project=' + imageNameParts[0];
+			uaVars = ['-jar', uaJarName];
+			fs.writeFileSync('wss-unified-agent.config', config);
 		} else {
 			const payload = github.context.payload;
 			const packageType = payload.registry_package.package_type;
