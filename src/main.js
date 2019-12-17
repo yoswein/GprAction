@@ -14,6 +14,8 @@ async function run() {
 		const wsUserKey = core.getInput('ws-user-key');
 		const wsProductKey = core.getInput('ws-product-key');
 		const debugMode = core.getInput('actions_step_debug');
+		const imageName = core.getInput('image-name');
+		const failOnPolicyViolations = core.getInput('fail-on-policy-violations');
 		const uaJarName = 'wss-unified-agent.jar';
 		// const uaDownloadPath = 'https://wss-qa.s3.amazonaws.com/unified-agent/integration/wss-unified-agent-integration-785.jar';
 		const uaDownloadPath = 'https://github.com/whitesource/unified-agent-distribution/releases/latest/download/wss-unified-agent.jar'
@@ -32,73 +34,85 @@ async function run() {
 		}
 
 		let uaVars = [];
-		const payload = github.context.payload;
-		const packageType = payload.registry_package.package_type;
-		core.info('Package type: ' + packageType);
-
-		// If the package type is docker - pull it
-		if (packageType === 'docker') {
-
-			if (debugMode === 'true') {
-				// Docker version
-				await exec.exec('docker', ['-v']);
-
-				// List existing docker images
-				await exec.exec('docker', ['images']);
-			}
-
-			// Get the authenticated user of the gpr token
-			const gprToken = core.getInput('gpr-token');
-			if (gprToken == null || gprToken.trim().length === 0) {
-				core.setFailed('Invalid input: gpr-token');
-				return;
-			}
-			const octokit = new github.GitHub(gprToken);
-			const { data: user } = await octokit.users.getAuthenticated();
-			const gprUser = user.login;
-
-			// Execute the docker login command
-			await exec.exec('docker', ['login', 'docker.pkg.github.com', '-u', gprUser, '-p', gprToken]);
-
-			// Create and execute the docker pull command
-			const packageName = payload.registry_package.name;
-			const packageVersion = payload.registry_package.package_version.version;
-			const repositoryFullName = payload.repository.full_name;
-			const packageUrl = 'docker.pkg.github.com/' + repositoryFullName.toLowerCase() + '/' + packageName + ':' + packageVersion;
-			await exec.exec('docker', ['pull', packageUrl]);
-
-			if (debugMode === 'true') {
-				// List existing docker images
-				await exec.exec('docker', ['images']);
-			}
-
+		if (imageName != null && imageName.trim().length > 0) {
 			uaVars = ['-jar', uaJarName,
-					  '-wss.url', wsDestinationUrl,
-					  '-apiKey', wsApiKey,
-					  '-noConfig', 'true',
-					  '-generateScanReport', 'true',
-					  '-docker.scanImages', 'true',
-				      '-docker.includeSingleScan', '.*' + packageName + '.*',
-					  '-userKey', wsUserKey,
-					  '-project', payload.registry_package.name];
-
-		// Else - the package type is not docker - download it
+				'-wss.url', wsDestinationUrl,
+				'-apiKey', wsApiKey,
+				'-noConfig', 'true',
+				'-generateScanReport', 'true',
+				'-docker.scanImages', 'true',
+				'-docker.includeSingleScan', '.*' + imageName + '.*',
+				'-userKey', wsUserKey,
+				'-project', imageName];
 		} else {
-			// Download all package files
-			for (let i = 0; i < payload.registry_package.package_version.package_files.length; i++) {
-				let packageFile = payload.registry_package.package_version.package_files[i];
-				let downloadLink = packageFile.download_url;
-				let downloadName = packageFile.name;
-				await utilities.download(downloadLink, downloadName);
+			const payload = github.context.payload;
+			const packageType = payload.registry_package.package_type;
+			core.info('Package type: ' + packageType);
+
+			// If the package type is docker - pull it
+			if (packageType === 'docker') {
+
+				if (debugMode === 'true') {
+					// Docker version
+					await exec.exec('docker', ['-v']);
+
+					// List existing docker images
+					await exec.exec('docker', ['images']);
+				}
+
+				// Get the authenticated user of the gpr token
+				const gprToken = core.getInput('gpr-token');
+				if (gprToken == null || gprToken.trim().length === 0) {
+					core.setFailed('Invalid input: gpr-token');
+					return;
+				}
+				const octokit = new github.GitHub(gprToken);
+				const {data: user} = await octokit.users.getAuthenticated();
+				const gprUser = user.login;
+
+				// Execute the docker login command
+				await exec.exec('docker', ['login', 'docker.pkg.github.com', '-u', gprUser, '-p', gprToken]);
+
+				// Create and execute the docker pull command
+				const packageName = payload.registry_package.name;
+				const packageVersion = payload.registry_package.package_version.version;
+				const repositoryFullName = payload.repository.full_name;
+				const packageUrl = 'docker.pkg.github.com/' + repositoryFullName.toLowerCase() + '/' + packageName + ':' + packageVersion;
+				await exec.exec('docker', ['pull', packageUrl]);
+
+				if (debugMode === 'true') {
+					// List existing docker images
+					await exec.exec('docker', ['images']);
+				}
+
+				uaVars = ['-jar', uaJarName,
+					'-wss.url', wsDestinationUrl,
+					'-apiKey', wsApiKey,
+					'-noConfig', 'true',
+					'-generateScanReport', 'true',
+					'-docker.scanImages', 'true',
+					'-docker.includeSingleScan', '.*' + packageName + '.*',
+					'-userKey', wsUserKey,
+					'-project', packageName];
+
+				// Else - the package type is not docker - download it
+			} else {
+				// Download all package files
+				for (let i = 0; i < payload.registry_package.package_version.package_files.length; i++) {
+					let packageFile = payload.registry_package.package_version.package_files[i];
+					let downloadLink = packageFile.download_url;
+					let downloadName = packageFile.name;
+					await utilities.download(downloadLink, downloadName);
+				}
+				uaVars = ['-jar', uaJarName,
+					'-d', '.',
+					'-wss.url', wsDestinationUrl,
+					'-apiKey', wsApiKey,
+					'-noConfig', 'true',
+					'-generateScanReport', 'true',
+					'-userKey', wsUserKey,
+					'-project', payload.registry_package.name];
 			}
-			uaVars = ['-jar', uaJarName,
-					  '-d', '.',
-					  '-wss.url', wsDestinationUrl,
-					  '-apiKey', wsApiKey,
-					  '-noConfig', 'true',
-					  '-generateScanReport', 'true',
-					  '-userKey', wsUserKey,
-					  '-project', payload.registry_package.name];
 		}
 
 		if (wsProductKey != null && wsProductKey.trim().length > 20) {
@@ -137,6 +151,19 @@ async function run() {
          } else {
              core.info('Print scan report false');
          }
+
+        // Fail if there are any policy violations
+        if (failOnPolicyViolations === 'true') {
+			if (logFilePath.length > 0) {
+				let scanReport = fs.readFileSync(logFilePath, 'utf8');
+				let scanReportJson = JSON.parse(scanReport);
+				if (scanReportJson.policyStatistics.totalIssues > 0) {
+					core.setFailed('Found ' + scanReportJson.policyStatistics.totalIssues > 0 + ' policy violations');
+				} else {
+					core.info('No policy violations found');
+				}
+			}
+		}
 	} catch (error) {
 		core.setFailed(error.message);
 	}
