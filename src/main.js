@@ -74,17 +74,17 @@ async function run() {
 				}
 
 				// Get the authenticated user of the gpr token
-				const gprToken = core.getInput('gpr-token');
-				if (gprToken == null || gprToken.trim().length === 0) {
-					core.setFailed('Invalid input: gpr-token');
+				const gpToken = core.getInput('gp-token');
+				if (gpToken == null || gpToken.trim().length === 0) {
+					core.setFailed('Invalid input: gp-token');
 					return;
 				}
-				const octokit = new github.GitHub(gprToken);
+				const octokit = new github.GitHub(gpToken);
 				const {data: user} = await octokit.users.getAuthenticated();
 				const gprUser = user.login;
 
 				// Execute the docker login command
-				await exec.exec('docker', ['login', 'docker.pkg.github.com', '-u', gprUser, '-p', gprToken]);
+				await exec.exec('docker', ['login', 'docker.pkg.github.com', '-u', gprUser, '-p', gpToken]);
 
 				// Create and execute the docker pull command
 				const packageName = payload.registry_package.name;
