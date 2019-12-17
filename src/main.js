@@ -42,7 +42,8 @@ async function run() {
 			}
 			let config =
 				'checkPolicies=true\n' +
-			    'docker.includes=' + regexFriendlyImageName;
+				'docker.includes=' + regexFriendlyImageName + '\n' +
+				'includes=' + regexFriendlyImageName;
 			fs.writeFileSync('wss-unified-agent.config', config);
 			uaVars = ['-jar', uaJarName,
 				'-wss.url', wsDestinationUrl,
