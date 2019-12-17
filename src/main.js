@@ -43,12 +43,11 @@ async function run() {
 			let config =
 				'checkPolicies=true\n' +
 				'docker.includes=' + regexFriendlyImageName + '\n' +
-				'includes=.*\n' +
+				'includes=**/*.c **/*.cc **/*.cp **/*.cpp **/*.cxx **/*.c\\+\\+ **/*.h **/*.hh **/*.hpp **/*.hxx **/*.h\\+\\+ **/*.m **/*.mm **/*.pch **/*.c# **/*.cs **/*.csharp **/*.go **/*.goc **/*.js **/*.pl **/*.plx **/*.pm **/*.ph **/*.cgi **/*.fcgi **/*.pod **/*.psgi **/*.al **/*.perl **/*.t **/*.pl6 **/*.p6m **/*.p6l **/*.pm6 **/*.nqp **/*.6pl **/*.6pm **/*.p6 **/*.php **/*.py **/*.rb **/*.swift **/*.java **/*.clj **/*.cljx **/*.cljs **/*.cljc **/*.jar **/*.egg **/*.tar.gz **/*.tgz **/*.zip **/*.whl **/*.gem **/*.apk **/*.air **/*.dmg **/*.exe **/*.gem **/*.gzip **/*.msi **/*.nupkg **/*.swc **/*.swf **/*.tar.bz2 **/*.pkg.tar.xz **/*.(u)?deb **/*.(a)?rpm \n' +
 				'excludes=' + uaJarName + '\n' +
 				'updateType=OVERRIDE\n' +
 				'updateInventory=true\n' +
 				'forceUpdate=true\n' +
-				'forceCheckAllDependencies=true\n' +
 				'forceUpdate.failBuildOnPolicyViolation=false';
 			fs.writeFileSync('wss-unified-agent.config', config);
 			uaVars = ['-jar', uaJarName,
