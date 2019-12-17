@@ -43,7 +43,11 @@ async function run() {
 			let config =
 				'checkPolicies=true\n' +
 				'docker.includes=' + regexFriendlyImageName + '\n' +
-				'includes=' + regexFriendlyImageName;
+				'includes=' + regexFriendlyImageName+ '\n' +
+				'updateType=OVERRIDE\n' +
+				'updateInventory=true\n' +
+				'forceUpdate=true\n' +
+				'forceUpdate.failBuildOnPolicyViolation=false';
 			fs.writeFileSync('wss-unified-agent.config', config);
 			uaVars = ['-jar', uaJarName,
 				'-wss.url', wsDestinationUrl,
