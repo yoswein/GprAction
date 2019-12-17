@@ -47,6 +47,7 @@ async function run() {
 				'updateType=OVERRIDE\n' +
 				'updateInventory=true\n' +
 				'forceUpdate=true\n' +
+				'forceCheckAllDependencies=true\n' +
 				'forceUpdate.failBuildOnPolicyViolation=false';
 			fs.writeFileSync('wss-unified-agent.config', config);
 			uaVars = ['-jar', uaJarName,
@@ -170,7 +171,7 @@ async function run() {
 				let scanReport = fs.readFileSync(logFilePath, 'utf8');
 				let scanReportJson = JSON.parse(scanReport);
 				if (scanReportJson.policyStatistics.totalRejected > 0) {
-					core.setFailed('Found ' + scanReportJson.policyStatistics.totalRejected > 0 + ' policy violations');
+					core.setFailed('Found ' + scanReportJson.policyStatistics.totalRejected + ' policy violations');
 				} else {
 					core.info('No policy violations found');
 				}
