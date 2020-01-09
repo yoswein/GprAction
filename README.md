@@ -1,13 +1,14 @@
-# Whitesource GP Security Action
-This action is designed to run as part of the workflow `registry_package` [triggered event](https://help.github.com/en/github/automating-your-workflow-with-github-actions/events-that-trigger-workflows).
-
-It scans the published/updated Docker image in GP and reports back with found security vulnerabilities and license information.
+# Whitesource Docker Security Action
+This action is designed to run as part of the workflow that builds a docker image.
+It scans the newly created Docker image and reports back with found security vulnerabilities and license information.
 
 # Usage
 See [action.yml](action.yml)
 
 ### Input Parameters
-**gp-token**: GitHub personal access token with read/write privileges to GP. This parameter must be a [repository secret](https://help.github.com/en/github/automating-your-workflow-with-github-actions/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables). Required parameter.
+**docker-image-identifier**: The name of the docker image to be scanned. Required parameter.
+
+**fail-on-policy-violations**: Whether to fail the workflow on policy violations. Default is false.
 
 **ws-destination-url**: WhiteSource environment destination url. Required parameter.
 
