@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: security-scan-log
-          path: ${{ steps.gp-security-check.outputs.scan-report-folder-path }}
+          path: ${{ steps.docker-security-check.outputs.scan-report-folder-path }}
 ```
 
 Another option is to print the scan report to the step's log, without uploading it as an artifact:
