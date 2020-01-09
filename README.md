@@ -30,18 +30,26 @@ See [action.yml](action.yml)
 ### Workflow Examples
 The recommended way to add this action to your workflow, is with a subsequent action that uploads the report json as an artifact. For example:
 ```yaml
-on: registry_package
+on:
+  push:
+    branches:
+      - master
 name: WORKFLOW_NAME
 jobs:
-  gpSecurityJob:
-    name: GP Security Check Job
+  dockerBuildAndSecurityJob:
+    name: Docker Build And Security Check Job
     runs-on: ubuntu-latest
     steps:
-      - name: GP Security Check Step
-        id: gp-security-check
-        uses: whitesource/GitHubPackagesSecurityAction@19.10.2
+      - name: checkout
+        uses: actions/checkout@v1
+      - name: Build Docker Image
+        run: docker build . --file Dockerfile --tag DOCKER_IMAGE_NAME:DOCKER_IMAGE_VERSION
+      - name: Docker Security Check Step
+        id: docker-security-check
+        uses: whitesource/DockerSecurityAction@19.10.2
         with:
-          gp-token: ${{ secrets.GP_ACCESS_TOKEN }}
+          docker-image-identifier: DOCKER_IMAGE_NAME:DOCKER_IMAGE_VERSION
+          fail-on-policy-violations: true
           ws-api-key: ${{ secrets.WS_API_KEY }}
           ws-user-key: ${{ secrets.WS_USER_KEY }}
           ws-product-key: ${{ secrets.WS_PRODUCT_KEY }}
@@ -55,18 +63,26 @@ jobs:
 
 Another option is to print the scan report to the step's log, without uploading it as an artifact:
 ```yaml
-on: registry_package
+on:
+  push:
+    branches:
+      - master
 name: WORKFLOW_NAME
 jobs:
-  gpSecurityJob:
-    name: GP Security Check Job
+  dockerBuildAndSecurityJob:
+    name: Docker Build And Security Check Job
     runs-on: ubuntu-latest
     steps:
-      - name: GP Security Check Step
-        id: gp-security-check
-        uses: whitesource/GitHubPackagesSecurityAction@19.10.2
+      - name: checkout
+        uses: actions/checkout@v1
+      - name: Build Docker Image
+        run: docker build . --file Dockerfile --tag DOCKER_IMAGE_NAME:DOCKER_IMAGE_VERSION
+      - name: Docker Security Check Step
+        id: docker-security-check
+        uses: whitesource/DockerSecurityAction@19.10.2
         with:
-          gp-token: ${{ secrets.GP_ACCESS_TOKEN }}
+          docker-image-identifier: DOCKER_IMAGE_NAME:DOCKER_IMAGE_VERSION
+          fail-on-policy-violations: true
           ws-api-key: ${{ secrets.WS_API_KEY }}
           ws-user-key: ${{ secrets.WS_USER_KEY }}
           ws-product-key: ${{ secrets.WS_PRODUCT_KEY }}
