@@ -1,6 +1,6 @@
-name: 'Scan Docker Image'
-description: 'Scan docker images created as part of a workflow'
-author: 'Yoni & Yossi'
+name: 'Docker Security Scan'
+description: 'Find security vulnearbilities in docker images'
+author: 'WhiteSource'
 inputs:
   ws-destination-url:
       description: 'WS environment destination url'
@@ -20,6 +20,7 @@ inputs:
   fail-on-policy-violations:
     description: 'Whether to fail the workflow on policy violations'
     required: false
+    default: false
   print-scan-report:
     description: 'Whether to print the results report'
     required: false

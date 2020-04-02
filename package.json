@@ -1,16 +1,18 @@
 {
-  "name": "whitesource-gpr-action",
-  "version": "1.0.2",
+  "name": "ws-docker-security-action",
+  "version": "20.4.1",
   "private": true,
-  "description": "WhiteSource GPR action",
+  "description": "WhiteSource docker image security scan action",
   "main": "src/main.js",
   "keywords": [
     "actions",
-    "node",
-    "setup"
+    "github",
+    "docker",
+    "whitesource",
+    "security"
   ],
-  "author": "Yoni&Yossi",
-  "license": "MIT",
+  "author": "WhiteSource",
+  "license": "Apache 2.0",
   "dependencies": {
     "@actions/core": "^1.1.1",
     "@actions/github": "^1.1.0",
