@@ -9,7 +9,7 @@
     "node",
     "setup"
   ],
-  "author": "Yoni&Yossi",
+  "author": "Yoni&Yossi&eRez",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.1.1",
